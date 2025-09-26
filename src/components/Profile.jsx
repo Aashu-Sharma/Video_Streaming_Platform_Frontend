@@ -1,0 +1,53 @@
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link, Outlet } from "react-router-dom";
+
+function Profile({ profileData, channelVideos, user }) {
+  const userData = useSelector((state) => state.auth.userData);
+  const isUserProfile = profileData?._id === userData?._id;
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="upper-container w-full h-[200px] p-8 flex flex-row items-center gap-8 border-b-2 border-gray-200 ">
+        <div className="Profile-image-circle w-[150px] h-[150px] rounded-full border overflow-hidden ">
+          <img
+            src={profileData?.avatar}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="Profile-details">
+          <h1 className="text-3xl font-bold mb-2">
+            {profileData?.username?.toUpperCase()}
+          </h1>
+          <p className="text-sm text-gray-200 mb-2">{`Total Subscribers: ${profileData?.subscribersCount}`}</p>
+          <p className="text-sm text-gray-200">{`Total Videos: ${profileData?.videosCount}`}</p>
+        </div>
+      </div>
+      <div className="lower-container w-full h-full flex flex-col">
+        <div className="nav flex flex-row items-center justify-center border-b-2 w-full">
+          <div className="Videos w-[50%] border-r-2 border-gray-200 text-center text-2xl p-2">
+            {isUserProfile ? (
+              <Link to={`/userProfile/videos`}>Videos</Link>
+            ) : (
+              <Link to={`/${user}/videos`}>Videos</Link>
+            )}
+          </div>
+          <div className="Posts  w-[50%] text-center text-2xl p-2">
+            {isUserProfile ? (
+              <Link to={`/userProfile/posts`}>Posts</Link>
+            ) : (
+              <Link to={`/${user}/posts`}>Posts</Link>
+            )}
+          </div>
+        </div>
+
+        {!channelVideos || channelVideos.length === 0 ? (
+          <p>No videos found for this user</p>
+        ) : (
+          <Outlet context={[channelVideos]} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Profile;
