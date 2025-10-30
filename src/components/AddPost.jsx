@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FormInput } from "./index.js";
 import { Button } from "./ui/button.jsx";
-import { Plus, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
+import {useDispatch} from 'react-redux';
+import {setUserPosts} from '../store/authSlice.js';
+import axios from "axios";
+import { toast } from "react-toastify";
 
-function AddPost({ userData }) {
+// todo : add validation for images and content 
+// todo: instant ui update after post creation
+
+function AddPost({ userData, userPosts }) { 
   const {
     register,
     handleSubmit,
@@ -27,10 +34,13 @@ function AddPost({ userData }) {
       maxLength: 3,
     },
   });
-  const [displayImageForm, setDisplayImageForm] = useState(false);
+  // const [displayImageForm, setDisplayImageForm] = useState(false);
+  const dispatch = useDispatch();
   const [imagePreview, setImagePreview] = useState({});
   const [disabled, setDisabled] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
+  const prevField = fields[activeIndex - 1];
+  const nextField = fields[activeIndex + 1];
 
   const watchContent = watch("content");
 
@@ -49,27 +59,56 @@ function AddPost({ userData }) {
   };
 
   const handleRemove = async (index) => {
-    setActiveIndex((prev) => prev === 0 ? 0 : prev - 1);
+    setActiveIndex((prev) => (prev === 0 ? 0 : prev - 1));
     remove(index);
-    console.log("Removed index: ", index);
-    console.log("Field state After Removed : ", fields);
-  }
+  };
 
   const submit = async (data) => {
     console.log("FormData: ", data);
+    console.log("type of images data: ", typeof data.images);
+    const postData = new FormData();
+    postData.append("content", data.content);
+    if (data.images && data.images.length > 0) {
+      for (let i = 0; i < data.images.length; i++) {
+        const fileList = data.images[i];
+        if (fileList && fileList[0]) postData.append("images", fileList[0]);
+      }
+    }
+    postData.forEach((value, key) => {
+      console.log(key, ": ", value);
+    });
+    try {
+      const response = await axios.post(`/api/v1/tweets/create`, postData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.status === 201) {
+        console.log("Post created successfully: ", response.data.data);
+        toast.success("Post created successfully!");
+        setValue("content", "");
+        setValue("images", []);
+        setImagePreview({});
+        setActiveIndex(null);
+        userPosts = [response.data.data, ...userPosts];
+        dispatch(setUserPosts(userPosts));
+      }
+    } catch (error) {
+      console.error(error.response.data);
+      console.log("Error message: ", error.response.data.message);
+    }
   };
 
   useEffect(() => {
     if (fields.length === 0) {
-      setDisplayImageForm(false);
+      console.log("fields length: ", fields.length);
       setImagePreview({});
       setActiveIndex(null);
     }
-    console.log("Fields state: ", fields);
-    console.log("Current Active Index: ", activeIndex);
-  }, [fields])
+  }, [fields]);
 
-  console.log("fields: ", fields);
+  console.log("Fields state: ", fields);
+  console.log("activeIndex: ", activeIndex);
 
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">
@@ -100,107 +139,76 @@ function AddPost({ userData }) {
             </p>
           )}
 
-          {displayImageForm && (
+          {fields.length > 0 && (
             <div className="w-full flex flex-row gap-2 items-center">
-              {/* {fields.map(
-                (field, index) =>
-                  imagePreview[field.id] ? (
-                    <div
-                      key={field.id}
-                      className="w-full h-[300px] border rounded-lg overflow-hidden relative cursor-pointer"
-                    >
-                      <img
-                        src={imagePreview[field.id]}
-                        className="w-full h-full object-cover"
-                      />
-                      <X
-                        className="absolute top-[10px] right-[10px] bg-red-500"
-                        color="white"
-                        size={20}
-                        onClick={() => remove(index)}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      key={field.id}
-                      className="w-full bg-transparent border rounded-lg relative h-[300px]"
-                    >
-                      <label
-                        className=" absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
-                        htmlFor={field.id}
-                      >
-                        <Plus size={30} />
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        id={field.id}
-                        className="hidden"
-                        {...register(`images.${index}`, {
-                          onChange: (e) => {
-                            handleOnChange(e, field.id);
-                          },
-                        })}
-                      />
-                      <X
-                        className="absolute top-[10px] right-[10px] bg-red-500"
-                        color="white"
-                        size={20}
-                        onClick={() => remove(index)}
-                      />
-                    </div>
-                  )
-              )} */}
+              {prevField && (
+                <Button
+                  className={" text-white w-[50px] "}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (activeIndex > 0) {
+                      setActiveIndex((prev) => prev - 1);
+                    }
+                  }}
+                >
+                  <ArrowLeft size={20} />
+                </Button>
+              )}
+              {fields[activeIndex] && imagePreview[fields[activeIndex]?.id] ? (
+                <div className="w-full h-[300px] border rounded-lg overflow-hidden relative cursor-pointer">
+                  <img
+                    src={imagePreview[fields[activeIndex]?.id]}
+                    className="w-full h-full object-cover"
+                  />
+                  <X
+                    className="absolute top-[10px] right-[10px] bg-red-500"
+                    color="white"
+                    size={20}
+                    onClick={() => handleRemove(activeIndex)}
+                  />
+                </div>
+              ) : (
+                <div className="w-full bg-transparent border rounded-lg relative h-[300px]">
+                  <label
+                    className=" absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+                    htmlFor={fields[activeIndex]?.id}
+                  >
+                    <Plus size={30} />
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id={fields[activeIndex]?.id}
+                    className="hidden"
+                    {...register(`images.${activeIndex}`, {
+                      onChange: (e) => {
+                        handleOnChange(e, fields[activeIndex]?.id);
+                      },
+                    })}
+                  />
+                  <X
+                    className="absolute top-[10px] right-[10px] bg-red-500"
+                    color="white"
+                    size={20}
+                    onClick={() => handleRemove(activeIndex)}
+                  />
+                </div>
+              )}
 
-              {
-                fields[activeIndex] && imagePreview[fields[activeIndex]?.id] ? (
-                  <div
-                      className="w-full h-[300px] border rounded-lg overflow-hidden relative cursor-pointer"
-                    >
-                      <img
-                        src={imagePreview[fields[activeIndex]?.id]}
-                        className="w-full h-full object-cover"
-                      />
-                      <X
-                        className="absolute top-[10px] right-[10px] bg-red-500"
-                        color="white"
-                        size={20}
-                        onClick={() => handleRemove(activeIndex)}
-                      />
-                    </div>
-                ):(
-                  <div
-                      className="w-full bg-transparent border rounded-lg relative h-[300px]"
-                    >
-                      <label
-                        className=" absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
-                        htmlFor={fields[activeIndex]?.id}
-                      >
-                        <Plus size={30} />
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        id={fields[activeIndex]?.id}
-                        className="hidden"
-                        {...register(`images.${activeIndex}`, {
-                          onChange: (e) => {
-                            handleOnChange(e, fields[activeIndex]?.id);
-                          },
-                        })}
-                      />
-                      <X
-                        className="absolute top-[10px] right-[10px] bg-red-500"
-                        color="white"
-                        size={20}
-                        onClick={() => handleRemove(activeIndex)}
-                      />
-                    </div>
-                )
-              }
-              
-              {
-                fields.length < 3 && displayImageForm &&(
+              { nextField ? (
+                <Button
+                  className={" text-white w-[50px] "}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (activeIndex < fields.length - 1) {
+                      setActiveIndex((prev) => prev + 1);
+                    }
+                  }}
+                >
+                  <ArrowRight size={20} />
+                </Button>
+              ) : (
+                fields.length < 3 && (
                   <Button
                     className={" text-white w-[50px] "}
                     onClick={(e) => {
@@ -214,7 +222,7 @@ function AddPost({ userData }) {
                     <Plus size={20} />
                   </Button>
                 )
-              }
+              )}
             </div>
           )}
 
@@ -229,7 +237,6 @@ function AddPost({ userData }) {
                   setActiveIndex(0);
                   console.log("Fields after append: ", fields);
                 }
-                setDisplayImageForm(true);
               }}
             >
               Add Image

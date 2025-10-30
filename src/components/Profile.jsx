@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link, Outlet } from "react-router-dom";
 
-function Profile({ profileData, channelVideos, user }) {
+function Profile({ profileData, channelVideos, channelPosts, user }) {
   const userData = useSelector((state) => state.auth.userData);
   const isUserProfile = profileData?._id === userData?._id;
   return (
@@ -43,7 +43,7 @@ function Profile({ profileData, channelVideos, user }) {
         {!channelVideos || channelVideos.length === 0 ? (
           <p>No videos found for this user</p>
         ) : (
-          <Outlet context={[channelVideos]} />
+          <Outlet context={{ channelVideos, channelPosts, profileData }} />
         )}
       </div>
     </div>

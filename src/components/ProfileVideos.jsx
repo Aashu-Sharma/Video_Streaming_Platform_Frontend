@@ -4,7 +4,7 @@ import { ListVideos } from "./index.js";
 import deviceWidth from "../utils/deviceWidth.js";
 
 function ProfileVideos() {
-  const [channelVideos] = useOutletContext();
+  const {channelVideos} = useOutletContext();
   const isMobile = deviceWidth();
   return (
     <div className="w-full h-full">

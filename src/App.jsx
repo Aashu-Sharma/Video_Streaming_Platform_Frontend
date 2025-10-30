@@ -10,6 +10,7 @@ import {
   setUserProfileData,
   setUserPlaylists,
   setUserVideos,
+  setUserPosts
 } from "./store/authSlice";
 import { setVideoData } from "./store/videoSlice";
 import axios from "axios";
@@ -53,6 +54,18 @@ function App() {
     }
   };
 
+  const fetchUserPosts = async() => {
+    try {
+      const response = await axios.get("/api/v1/dashboard/posts");
+      if (response.status === 200) {
+        console.log("Fetched user posts: ", response.data.data);
+        dispatch(setUserPosts(response.data.data));
+      }
+    } catch (error) {
+      console.error(error.response.data);
+    }
+  }
+
 
   //don't touch it.
   const getAllVideos = async (userData) => {
@@ -74,6 +87,7 @@ function App() {
     fetchUserProfileData();
     fetchUserPlaylists();
     fetchUserVideos();
+    fetchUserPosts()
   }, [userId]);
 
   useEffect(() => {

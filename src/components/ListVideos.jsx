@@ -25,7 +25,7 @@ function ListVideos({ videoList, className }) {
       {videoList.map((video) => (
         <Link key={video._id} to={`/video/${video._id}`}>
           <div
-            className="w-full rounded-lg hover:scale-105 hover:shadow-gray-200 hover-shadow-lg transition-all duration-300 "
+            className="w-full border rounded-lg hover:scale-105 hover:shadow-gray-200 hover-shadow-lg transition-all duration-300 "
             onMouseEnter={() => setHoveredVideoId(video._id)}
             onMouseLeave={() => setHoveredVideoId(null)}
           >

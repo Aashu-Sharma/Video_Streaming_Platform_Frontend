@@ -83,7 +83,7 @@ function Comments({
     }
   };
 
-  const getLikedComments = async (commentIds) => {
+  const getLikedComments = async (commentIds) => { 
     try {
       const response = await axios.post(`/api/v1/likes/comments/liked`, {
         commentIds,

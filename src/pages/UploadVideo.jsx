@@ -14,8 +14,8 @@ function UploadVideo() {
     handleSubmit,
     control,
     formState: { errors },
-    setValue, 
-    clearErrors
+    setValue,
+    clearErrors,
   } = useForm();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
