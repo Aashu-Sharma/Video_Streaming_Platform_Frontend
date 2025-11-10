@@ -4,12 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FormInput } from "./index.js";
-import { useForm } from "react-hook-form";
-import {setUserPlaylists} from '../store/authSlice.js';
+import { PlaylistForm } from "./index.js";
+import {useClickOutside} from '../hooks/index.js';
+import { fetchUserPlaylists } from "../store/playlistSlice.js";
 
 function AddToPlaylist() {
-  const userPlaylists = useSelector((state) => state.auth.userPlaylists);
+  const userPlaylists = useSelector((state) => state.playlists.userPlaylists);
   const [playlistData, setPlaylistData] = useState(null);
   const [checkedPlaylists, setCheckedPlaylists] = useState({});
   const [displayForm, setDisplayForm] = useState(false);
@@ -17,11 +17,6 @@ function AddToPlaylist() {
   const navigate = useNavigate();
   const wrapperRef = useRef(null);
   const dispatch = useDispatch();
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm();
 
   const CheckIfVideoExistsinPlaylists = () => {
     const updatedChecked = {};
@@ -55,6 +50,8 @@ function AddToPlaylist() {
         ...prev,
         [playlistId]: isChecked,
       }));
+
+      dispatch(fetchUserPlaylists());
     } catch (error) {
       console.log(error.status);
       console.log(error.data.message);
@@ -62,43 +59,11 @@ function AddToPlaylist() {
     }
   };
 
-  const createPlaylist = async (data) => {
-    let rawData = {
-      name: data.name,
-      description: data.description,
-    };
-
-    console.log("rawData: ", rawData);
-    try {
-      const response = await axios.post(`/api/v1/playlist`, rawData);
-      console.log("Playlist Response: ", response.data);
-      if (response.status === 201) {
-        setPlaylistData(response.data.data);
-        toast.success(response.data.message);
-        setDisplayForm((prev) => !prev);
-        dispatch(setUserPlaylists([...userPlaylists, response.data.data]));
-      }
-    } catch (error) {
-      console.log(error.status);
-      console.log(error.response.data.message);
-      toast.error(error.response.data.message);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        navigate(-1);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [navigate]);
-
+  useClickOutside(wrapperRef, () => {
+    setDisplayForm((prev) => !prev);
+    navigate(-1);
+  })
+  
   useEffect(() => {
     CheckIfVideoExistsinPlaylists();
   }, [videoId, userPlaylists]);
@@ -125,7 +90,6 @@ function AddToPlaylist() {
 
         {userPlaylists.length === 0 && !displayForm && (
           <div className="text-center flex flex-col gap-2">
-            <p>{successMessage}</p>
             <p onClick={() => setDisplayForm((prev) => !prev)}>
               Click here to create one..
             </p>
@@ -133,58 +97,10 @@ function AddToPlaylist() {
         )}
 
         {displayForm ? (
-          <div
-            onClick={() => setDisplayForm((prev) => !prev)}
-            className={`flex items-center justify-between text-white text-base  ${
-              displayForm && "flex-col gap-4 rounded-lg p-2 w-full "
-            }`}
-          >
-            <div className="flex ">
-              <Pencil className="mr-2" />
-              <p>Create New Playlist</p>
-            </div>
-
-            <form
-              onSubmit={handleSubmit(createPlaylist)}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full flex flex-col gap-4 p-2"
-            >
-              <FormInput
-                placeholder="Enter name of your playlist"
-                className="w-full p-2 border border-white "
-                inputClassname="w-full"
-                {...register("name", {
-                  required: "name of the playlist is required",
-                })}
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm text-center">
-                  {errors.name.message}
-                </p>
-              )}
-              <FormInput
-                placeholder="Enter description of playlist"
-                className="w-full h-full p-2 border "
-                inputClassname="w-full"
-                {...register("description", {
-                  required: "description of the playlist is required",
-                })}
-              />
-
-              {errors.description && (
-                <p className="text-red-500 text-sm text-center">
-                  {errors.description.message}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                className="w-full rounded-lg p-2 bg-blue-500 text-white"
-              >
-                Create
-              </button>
-            </form>
-          </div>
+          <PlaylistForm
+            displayForm={displayForm}
+            setDisplayForm={setDisplayForm}
+          />
         ) : (
           userPlaylists &&
           userPlaylists?.length !== 0 && (

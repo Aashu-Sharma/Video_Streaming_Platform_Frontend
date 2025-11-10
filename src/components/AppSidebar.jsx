@@ -32,7 +32,7 @@ const items = [
     title: "Library",
     url: "#",
     icon: Library,
-    link: "/",
+    link: "/library",
   },
 ];
 

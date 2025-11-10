@@ -5,6 +5,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Comments } from "./index.js";
 import deviceWidth from "../utils/deviceWidth.js";
+import {useDispatch} from 'react-redux';
+import { fetchUserLikedVideos } from "@/store/authSlice.js";
 
 function VideoSection({
   videoToBePlayed,
@@ -13,6 +15,7 @@ function VideoSection({
   inMobileDisplayAllComments,
   setInMobileDisplayAllComments,
 }) {
+  const dispatch = useDispatch();
   const [disableSubscribe, setDisableSubscribed] = useState(false);
   const [subscribed, setSubscribed] = useState(null);
   const [isliked, setLiked] = useState(false);
@@ -76,6 +79,7 @@ function VideoSection({
       if (response.status === 201 || response.status === 200) {
         setLiked((prev) => !prev);
         getLikesCount(videoToBePlayed?._id);
+        dispatch(fetchUserLikedVideos()); 
       }
     } catch (error) {
       console.error("Error adding like: ", error);

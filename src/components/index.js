@@ -14,6 +14,14 @@ import UploadVideoAndThumbnail from './UploadVideoAndThumbnail.jsx';
 import ListPosts from './ListPosts.jsx';
 import AddPost from './AddPost.jsx';
 import Profile from './Profile.jsx';
+import WatchHistory from './WatchHistory.jsx';
+import PlaylistsSection from './PlaylistsSection.jsx';
+import Section from './Section.jsx';
+import ListPlaylists from './ListPlaylists.jsx';
+import LikedVideosSection from './LikedVideosSection.jsx';
+import VideoCard from './VideoCard.jsx';
+import PlaylistForm from './PlaylistForm.jsx';
+import PlaylistModal from './PlaylistModal.jsx';
 
 export {
   Header,
@@ -31,5 +39,13 @@ export {
   UploadVideoAndThumbnail,
   ListPosts,
   AddPost,
-  Profile
+  Profile,
+  Section,
+  WatchHistory,
+  PlaylistsSection,
+  ListPlaylists,
+  LikedVideosSection,
+  VideoCard,
+  PlaylistForm,
+  PlaylistModal
 };

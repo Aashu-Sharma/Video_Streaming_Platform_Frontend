@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -11,18 +11,27 @@ import {
 import deviceWidth from "../utils/deviceWidth.js";
 import { Button } from "./ui/button.jsx";
 
-function DropdownComp({ trigger, items, className, children, menuClassName  }) {
+function DropdownComp({ trigger, items, className, children, menuClassName }) {
   const isMobile = deviceWidth();
+  const [open, setOpen] = useState(false);
+
+  const handleItemClick = (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(false);
+    if (item.onClick) {
+      setTimeout(() => item.onClick(), 50);
+    }
+  };
   return (
     <div>
-      <DropdownMenu >
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className={className}>
           {trigger}
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className={
-            `bg-white absolute top-[10px] right-[-20px] w-[200px] text-black shadow-lg rounded-xl p-2 ${menuClassName}`
-          }
+          align="start"
+          className={`bg-white w-[200px] text-black shadow-lg rounded-xl p-2 ${menuClassName}`}
         >
           {children && (
             <>
@@ -33,15 +42,22 @@ function DropdownComp({ trigger, items, className, children, menuClassName  }) {
           {items &&
             items.map((item, index) => (
               <DropdownMenuItem
-                key={item}
+                key={item.label}
                 className={`text-lg text-black border-none hover:border hover:border-black font-semibold ${
                   !isMobile ? "text-lg" : "text-base"
                 } `}
               >
-                {!item.link? (
-                  <Button onClick={item.onClick} className={item.className}>{item.label}</Button>
+                {!item.link ? (
+                  <Button
+                    onClick={(e) => handleItemClick(e, item)}
+                    className={item.className}
+                  >
+                    {item.label}
+                  </Button>
                 ) : (
-                  <Link to={item.link} className={item.className}>{item.label}</Link>
+                  <Link to={item.link} className={item.className}>
+                    {item.label}
+                  </Link>
                 )}
               </DropdownMenuItem>
             ))}

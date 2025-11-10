@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ListVideos } from "../components/index.js";
 import { VideoSection } from "../components/index.js";
 import deviceWidth from "../utils/deviceWidth.js";
+import {fetchUserWatchHistory} from '../store/watchHistorySlice.js';
 
 function VideoPage() {
   const { videoId } = useParams();
+  const dispatch = useDispatch();
   const videos = useSelector((state) => state.videos.videos);
   const currentUserData = useSelector((state) => state.auth.userData);
+  const watchHistory = useSelector((state) => state.watchHistory.history);
   const [videoToBePlayed, setVideoToBePlayed] = useState(null);
   const [videoList, setVideoList] = useState(null);
   const [inMobileDisplayAllComments, setInMobileDisplayAllComments] =
@@ -38,6 +41,14 @@ function VideoPage() {
   useEffect(() => {
     fetchVideoById();
   }, [videoId]);
+
+  useEffect(() => {
+    if(videoToBePlayed){
+      dispatch(fetchUserWatchHistory());
+    }
+  }, [videoToBePlayed])
+
+  console.log("Watch History in Video Page: ", watchHistory);
 
   useEffect(() => {
     removeVideoBeingWatched();

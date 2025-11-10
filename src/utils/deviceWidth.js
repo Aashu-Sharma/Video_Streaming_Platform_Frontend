@@ -12,8 +12,6 @@ export default function deviceWidth() {
     }
     mql.addEventListener("change", onChange);
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    // return () => {
-    // }
   }, [])
 
   return !!isMobile;

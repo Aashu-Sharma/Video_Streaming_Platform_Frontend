@@ -8,10 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCurrentUser,
   setUserProfileData,
-  setUserPlaylists,
   setUserVideos,
-  setUserPosts
-} from "./store/authSlice";
+  setUserPosts,
+  fetchUserLikedVideos,
+} from "./store/authSlice.js";
+import { fetchUserPlaylists } from "./store/playlistSlice.js";
+import {fetchUserWatchHistory} from './store/watchHistorySlice.js'
 import { setVideoData } from "./store/videoSlice";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
@@ -33,46 +35,31 @@ function App() {
   };
 
   const fetchUserVideos = async () => {
-      try {
-        const response = await axios.get(`/api/v1/dashboard/videos`);
-        if (response.status === 200) {
-          dispatch(setUserVideos(response.data.data));
-        }
-      } catch (error) {
-        setVideoError(error.response.data);
-      }
-    };
-
-  const fetchUserPlaylists = async () => {
     try {
-      const response = await axios.get("/api/v1/dashboard/playlists");
+      const response = await axios.get(`/api/v1/dashboard/videos`);
       if (response.status === 200) {
-        dispatch(setUserPlaylists(response.data.data));
+        dispatch(setUserVideos(response.data.data));
+      }
+    } catch (error) {
+      setVideoError(error.response.data);
+    }
+  };
+
+  const fetchUserPosts = async () => {
+    try {
+      const response = await axios.get("/api/v1/dashboard/posts");
+      if (response.status === 200) {
+        dispatch(setUserPosts(response.data.data));
       }
     } catch (error) {
       console.error(error.response.data);
     }
   };
 
-  const fetchUserPosts = async() => {
-    try {
-      const response = await axios.get("/api/v1/dashboard/posts");
-      if (response.status === 200) {
-        console.log("Fetched user posts: ", response.data.data);
-        dispatch(setUserPosts(response.data.data));
-      }
-    } catch (error) {
-      console.error(error.response.data);
-    }
-  }
-
-
-  //don't touch it.
   const getAllVideos = async (userData) => {
     if (userData) {
       try {
         const response = await axios.get(`/api/v1/videos`);
-        // console.log(response.data);
         if (response.status === 200) {
           dispatch(setVideoData(response.data.data));
         }
@@ -87,12 +74,20 @@ function App() {
     fetchUserProfileData();
     fetchUserPlaylists();
     fetchUserVideos();
-    fetchUserPosts()
+    fetchUserPosts();
   }, [userId]);
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchUserPlaylists());
+      dispatch(fetchUserLikedVideos());
+      dispatch(fetchUserWatchHistory());
+    }
+  }, [userId]);
 
   return (
     <>

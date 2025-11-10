@@ -3,10 +3,32 @@ import axios from "axios";
 
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
-  async () => {
-    const response = await axios.get("/api/v1/users/current-user");
-    // console.log("Current User Data: ", response.data.data);
-    return response.data.data;
+  async (rejectWithValue) => {
+    try {
+      const response = await axios.get("/api/v1/users/current-user");
+      return response.data.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: "Something went wrong" });
+    }
+  }
+);
+
+export const fetchUserLikedVideos = createAsyncThunk(
+  "auth/fetchUserLikedVideos",
+  async (rejectWithValue) => {
+    try {
+      console.log("Fetching User LikedVideos....");
+      const response = await axios.get("/api/v1/likes/videos");
+      return response.data.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: "Something went wrong" });
+    }
   }
 );
 
@@ -16,6 +38,8 @@ const initialState = {
   userVideos: null,
   userPlaylists: null,
   userPosts: null,
+  errors: null,
+  likedVideos: null,
 };
 
 const authSlice = createSlice({
@@ -40,9 +64,7 @@ const authSlice = createSlice({
     setUserVideos: (state, action) => {
       state.userVideos = action.payload;
     },
-    setUserPlaylists: (state, action) => {
-      state.userPlaylists = action.payload;
-    },
+
     setUserPosts: (state, action) => {
       state.userPosts = action.payload;
     },
@@ -61,6 +83,19 @@ const authSlice = createSlice({
         state.status = "failed";
         state.userData = null;
       });
+
+    builder
+      .addCase(fetchUserLikedVideos.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchUserLikedVideos.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.likedVideos = action.payload;
+      })
+      .addCase(fetchUserLikedVideos.rejected, (state, action) => {
+        state.status = "failed";
+        state.errors = action.error.message;
+      });
   },
 });
 
@@ -70,7 +105,7 @@ export const {
   setUserProfileData,
   setUserPlaylists,
   setUserVideos,
-  setUserPosts
+  setUserPosts,
 } = authSlice.actions;
 
 export default authSlice.reducer;

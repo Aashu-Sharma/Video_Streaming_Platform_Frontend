@@ -12,6 +12,11 @@ import {
   UserProfile,
   ChannelProfile,
   UploadVideo,
+  Library,
+  History,
+  PlaylistVideos,
+  AllPlaylists,
+  AllLikedVideos
 } from "./pages/index.js";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
@@ -71,6 +76,26 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/library",
+        element: <Library/>
+      },
+      {
+        path: "/history",
+        element: <History/>
+      },
+      {
+        path: "/playlist/:playlistId",
+        element: <PlaylistVideos/>
+      },
+      {
+        path: "/allPlaylists",
+        element: <AllPlaylists/>,
+      },
+      {
+        path: "/allLikedVideos",
+        element: <AllLikedVideos/>
+      }
     ],
   },
 
