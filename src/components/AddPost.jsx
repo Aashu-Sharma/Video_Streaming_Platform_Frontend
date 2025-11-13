@@ -3,15 +3,15 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { FormInput } from "./index.js";
 import { Button } from "./ui/button.jsx";
 import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
-import {useDispatch} from 'react-redux';
-import {setUserPosts} from '../store/authSlice.js';
+import { useDispatch } from "react-redux";
+import { setUserPosts } from "../store/authSlice.js";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-// todo : add validation for images and content 
+// todo : add validation for images and content
 // todo: instant ui update after post creation
 
-function AddPost({ userData, userPosts }) { 
+function AddPost({ userData, userPosts }) {
   const {
     register,
     handleSubmit,
@@ -195,7 +195,7 @@ function AddPost({ userData, userPosts }) {
                 </div>
               )}
 
-              { nextField ? (
+              {nextField ? (
                 <Button
                   className={" text-white w-[50px] "}
                   onClick={(e) => {

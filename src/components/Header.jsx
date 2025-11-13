@@ -138,11 +138,12 @@ function Header({ userData }) {
         />
 
         <DropdownComp
-          trigger={<User className="w-[15px] h-[15px]" />}
+          trigger={<User size={15} />}
           items={dropdownItems}
           className={`bg-trasnparent ${
             !isMobile ? "p-2 text-lg ml-4" : "p-1 text-[14px] ml-2"
           }  border rounded-4xl `}
+          menuClassName={"flex flex-col gap-2"}
         >
           <div className="flex items-center flex-row gap-2">
             <Avatar image={userData?.avatar} imageFallback={"avatar"} />

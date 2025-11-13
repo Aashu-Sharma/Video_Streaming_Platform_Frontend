@@ -16,7 +16,8 @@ import {
   History,
   PlaylistVideos,
   AllPlaylists,
-  AllLikedVideos
+  AllLikedVideos,
+  Settings
 } from "./pages/index.js";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: "/allLikedVideos",
         element: <AllLikedVideos/>
+      },
+      {
+        path: "/settings",
+        element: <Settings/>
       }
     ],
   },

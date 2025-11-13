@@ -5,8 +5,8 @@ import { Plus } from "lucide-react";
 import deviceWidth from "../utils/deviceWidth.js";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import {GetImageOrVideoPreview} from '../components/index.js';
-import { useDispatch, useSelector } from "react-redux";
+import { GetImageOrVideoPreview } from "../components/index.js";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../store/authSlice.js";
 
@@ -25,7 +25,7 @@ function Signup() {
         console.log("API is healthy:", response.data.message);
       })
       .catch((error) => {
-        console.error("API health check failed:", error);
+        console.error("API health check failed:", error.response.data);
       });
   }, []);
 

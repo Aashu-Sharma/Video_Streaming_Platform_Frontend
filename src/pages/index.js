@@ -10,6 +10,7 @@ import History from './History.jsx';
 import PlaylistVideos from './PlaylistVideos.jsx';
 import AllPlaylists from './AllPlaylists.jsx';
 import AllLikedVideos from './AllLikedVideos.jsx';
+import Settings from './Settings.jsx';
 
 export {
     VideoPage,
@@ -23,5 +24,6 @@ export {
     History,
     PlaylistVideos,
     AllPlaylists,
-    AllLikedVideos
+    AllLikedVideos,
+    Settings
 }

@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 
 function GetImageOrVideoPreview({
@@ -14,28 +14,32 @@ function GetImageOrVideoPreview({
   rules = { required: name + "is required" },
   setValue,
   clearErrors,
-  onfileSelect,
+  removeClassName,
 }) {
-  const [preview, setPreview] = useState("");
+  const [preview, setPreview] = useState(defaultValue || "");
   const handleRemove = () => {
     setPreview("");
-    setValue(name, null);
+    setValue(name, null)
     clearErrors(name);
-  }
+  };
 
   const handlePreview = (event) => {
     console.log("function ran");
     const file = event.target.files[0];
     console.log(file);
     if (file) {
-      const fileUrl = URL.createObjectURL(file)
-      // setPreview(URL.createObjectURL(file));
+      const fileUrl = URL.createObjectURL(file);
       setPreview(fileUrl);
       return file;
     }
   };
 
-  console.log("preview: ", preview);
+  useEffect(() => {
+    if(defaultValue ){
+      setPreview(defaultValue)
+    }
+  }, [defaultValue])
+
   return (
     <div className={`${className} `}>
       {preview.trim() !== "" ? (
@@ -47,19 +51,17 @@ function GetImageOrVideoPreview({
               className={`w-full h-full ${videoClassName}`}
               type="video/mp4"
             />
-            <button
-              onClick={() => handleRemove()}
-            >
+            <button onClick={() => handleRemove()}>
               <X className="z-[2] absolute top-0 right-0 text-red-500" />
             </button>
           </>
         ) : (
           <>
             <img src={preview} className={` ${imgClassName}`} />
-            <button
-              onClick={() => handleRemove()}
-            >
-              <X className="z-[2] absolute top-0 right-0 text-red-500" />
+            <button onClick={() => handleRemove()}>
+              <X
+                className={`z-[2] absolute top-0 right-0 text-red-500 ${removeClassName}`}
+              />
             </button>
           </>
         )

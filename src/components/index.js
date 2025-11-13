@@ -22,6 +22,9 @@ import LikedVideosSection from './LikedVideosSection.jsx';
 import VideoCard from './VideoCard.jsx';
 import PlaylistForm from './PlaylistForm.jsx';
 import PlaylistModal from './PlaylistModal.jsx';
+import UpdateCoverImageAndAvatar from './UpdateCoverImageAndAvatar.jsx';
+import UpdateUsernameAndEmail from './UpdateUsernameAndEmail.jsx';
+import UpdatePassword from './UpdatePassword.jsx';
 
 export {
   Header,
@@ -47,5 +50,8 @@ export {
   LikedVideosSection,
   VideoCard,
   PlaylistForm,
-  PlaylistModal
+  PlaylistModal,
+  UpdateCoverImageAndAvatar,
+  UpdatePassword,
+  UpdateUsernameAndEmail,
 };
