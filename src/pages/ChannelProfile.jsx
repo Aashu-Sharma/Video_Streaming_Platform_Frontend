@@ -16,42 +16,6 @@ function ChannelProfile() {
   const channelPosts = useSelector((state) => state.profile.profilePosts);
   const dispatch = useDispatch();
 
-  // const fetchchannelProfile = async () => {
-  //   try {
-  //     const response = await axios.get(`/api/v1/users/c/${user}`);
-  //     if (response.status === 200) {
-  //       console.log("ChannelData: ", response.data.data);
-  //       setChannelProfileData(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error.response.data);
-  //   }
-  // };
-  // const fetchchannelVideos = async (userId) => {
-  //   try {
-  //     const response = await axios.get(`/api/v1/videos`, {
-  //       params: { userId },
-  //     });
-  //     if (response.status === 200) {
-  //       console.log("ChannelVideos: ", response.data.data);
-  //       setChannelVideos(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error.response.data);
-  //   }
-  // };
-  // const fetchchannelPosts = async (userId) => {
-  //   try {
-  //     const response = await axios.get(`/api/v1/tweets/user/${userId}`);
-  //     if (response.status === 200) {
-  //       console.log("ChannelPosts: ", response.data.data);
-  //       setChannelPosts(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error.response.data);
-  //   }
-  // }
-
   useEffect(() => {
     dispatch(fetchProfileData({ profileType: "channel", username: user }));
     return () => {

@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Posts, ProfileVideos, AddToPlaylist } from "./components/index.js";
+import { ToastContainer } from "react-toastify";
 import {
   VideoPage,
   Home,
@@ -11,13 +12,14 @@ import {
   Login,
   UserProfile,
   ChannelProfile,
-  UploadVideo,
   Library,
   History,
   PlaylistVideos,
   AllPlaylists,
   AllLikedVideos,
-  Settings
+  Settings,
+  CreateVideo,
+  UpdateVideo,
 } from "./pages/index.js";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
@@ -51,21 +53,21 @@ const router = createBrowserRouter([
       },
       {
         path: `/:user`,
-        element: <ChannelProfile/>,
-        children : [
+        element: <ChannelProfile />,
+        children: [
           {
             index: true,
-            element: <ProfileVideos/>
+            element: <ProfileVideos />,
           },
           {
             path: "videos",
-            element: <ProfileVideos/>
+            element: <ProfileVideos />,
           },
           {
             path: "posts",
-            element: <Posts/>
-          }
-        ]
+            element: <Posts />,
+          },
+        ],
       },
       {
         path: "/video/:videoId",
@@ -79,28 +81,28 @@ const router = createBrowserRouter([
       },
       {
         path: "/library",
-        element: <Library/>
+        element: <Library />,
       },
       {
         path: "/history",
-        element: <History/>
+        element: <History />,
       },
       {
         path: "/playlist/:playlistId",
-        element: <PlaylistVideos/>
+        element: <PlaylistVideos />,
       },
       {
         path: "/allPlaylists",
-        element: <AllPlaylists/>,
+        element: <AllPlaylists />,
       },
       {
         path: "/allLikedVideos",
-        element: <AllLikedVideos/>
+        element: <AllLikedVideos />,
       },
       {
         path: "/settings",
-        element: <Settings/>
-      }
+        element: <Settings />,
+      },
     ],
   },
 
@@ -116,13 +118,24 @@ const router = createBrowserRouter([
 
   {
     path: "/upload-video",
-    element: <UploadVideo />,
+    element: <CreateVideo />,
   },
+
+  {
+    path: "/upload-video",
+    element: <CreateVideo />,
+  },
+
+  {
+    path: "/edit-video/:videoId",
+    element: <UpdateVideo/>
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
+      <ToastContainer position="top-right" autoClose={3000} />
       <RouterProvider router={router}>
         <App />
       </RouterProvider>

@@ -17,6 +17,7 @@ function VideoCard({
 }) {
   const isMobile = deviceWidth();
   const [hoveredVideoId, setHoveredVideoId] = useState(null);
+  console.log("elem in VideoCard: ", elem);
   return (
     <div
       className={`w-full ${className} rounded-lg  overflow-hidden`}
@@ -26,19 +27,25 @@ function VideoCard({
       <div
         className={`thumbnailOrVideoContainer relative ${thumbnailOrVideoContainerClassName} aspect-video overflow-hidden `}
       >
-        {hoveredVideoId === elem._id ? (
+        {(elem.isPublished && hoveredVideoId === elem._id )? (
           <video
             src={elem.videoFile}
             autoPlay
             loop
+            muted
             className={`w-full h-full object-cover ${videoClassName} border`}
           />
         ) : (
           <img
             src={elem?.thumbnail}
             alt="thumbnail"
-            className={`w-full h-full object-cover ${imgClassName} border`}
+            className={`w-full h-full object-cover ${imgClassName} border ${!elem.isPublished && "opacity-[0.3]"}`}
           />
+        )}
+        {!elem.isPublished && (
+          <span className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]  text-white font-bold px-2 py-1 rounded">
+            Private
+          </span>
         )}
       </div>
       <div

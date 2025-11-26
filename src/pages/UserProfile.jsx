@@ -6,9 +6,7 @@ import {fetchProfileData, fetchProfileVideos, fetchProfilePosts} from '../store/
 function UserProfile() {
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state) => state.auth.userData);
-  const userData = useSelector((state) => state.profile.profileData);
-  const userVideos = useSelector((state) => state.profile.profileVids);
-  const userPosts = useSelector((state) => state.profile.profilePosts);
+  const {profileData, profileVids, profilePosts } = useSelector((state) => state.profile);
 
   useEffect(() => {
     if (loggedInUser?._id) {
@@ -20,16 +18,16 @@ function UserProfile() {
     }
   }, [dispatch, loggedInUser?._id]);
 
-  if (!userData) {
+  if (!profileData) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
 
   return (
     <div className="bg-black w-full h-full min-h-screen text-white">
       <Profile
-        profileData={userData}
-        channelVideos={userVideos}
-        channelPosts={userPosts}
+        profileData={profileData}
+        channelVideos={profileVids}
+        channelPosts={profilePosts}
       />
     </div>
   );

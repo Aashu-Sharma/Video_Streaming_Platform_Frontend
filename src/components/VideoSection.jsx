@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Plus, ThumbsUp } from "lucide-react";
+import { EllipsisVertical, Plus, ThumbsUp } from "lucide-react";
 import { checkTimePassed } from "../utils/timeFormatter.js";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { Comments } from "./index.js";
+import { Link, useNavigate } from "react-router-dom";
+import { Comments, DropdownComp } from "./index.js";
 import deviceWidth from "../utils/deviceWidth.js";
-import {useDispatch} from 'react-redux';
-import { fetchUserLikedVideos } from "@/store/authSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserLikedVideos } from "../store/authSlice.js";
+import { deleteVideo } from "../store/videoSlice.js";
+import { toast } from "react-toastify";
+import { removeVideoFromWatchHistory } from "../store/watchHistorySlice.js";
+import { removeVideoFromAllPlaylists } from "../store/playlistSlice.js";
 
 function VideoSection({
   videoToBePlayed,
@@ -16,18 +20,41 @@ function VideoSection({
   setInMobileDisplayAllComments,
 }) {
   const dispatch = useDispatch();
+  const likedVideos = useSelector((state) => state.auth.likedVideos);
   const [disableSubscribe, setDisableSubscribed] = useState(false);
   const [subscribed, setSubscribed] = useState(null);
   const [isliked, setLiked] = useState(false);
   const [likesCount, setliksCount] = useState(null);
   const [videoTime, setVideoTime] = useState(null);
   const isMobile = deviceWidth();
+  const userId = useSelector((state) => state.auth.userData)?._id;
+  const navigate = useNavigate();
+  const playlists = useSelector((state) => state.playlists.userPlaylists);
+
+
+  console.log("likedVideos: ", likedVideos);
+
+  const likedVideodIds = likedVideos?.map((video) => video._id);
 
   const showPublishedTime = () => {
     if (videoToBePlayed?.createdAt) {
       const response = checkTimePassed(videoToBePlayed?.createdAt);
       setVideoTime(response);
-      console.log(videoTime);
+    }
+  };
+
+  const handleDelete = async (videoId) => {
+    try {
+      await dispatch(deleteVideo(videoId)).unwrap();
+      await dispatch(removeVideoFromWatchHistory(videoId)).unwrap();
+      await dispatch(removeVideoFromAllPlaylists(videoId)).unwrap();
+      if(likedVideodIds?.includes(videoId)){
+        await axios.post(`/api/v1/likes/toggle/v/${videoId}`);
+      }
+      toast.success("Video successfully deleted");
+      navigate("/");
+    } catch (error) {
+      toast.error(error?.message || `Failed to update password`);
     }
   };
 
@@ -36,9 +63,7 @@ function VideoSection({
       const response = await axios.get(
         `/api/v1/subscriptions/check/${channelId}`
       );
-      if (response.status === 200) {
-        setSubscribed(response.data.data);
-      }
+      setSubscribed(response.data.data);
     } catch (error) {
       console.error(error.response.data);
     }
@@ -48,10 +73,8 @@ function VideoSection({
     try {
       const response = await axios.post(`/api/v1/subscriptions/c/${channelId}`);
       if (response.status === 201) {
-        console.log("Response: ", response.data);
         setSubscribed(true);
         await fetchVideoById();
-        // await checkIfSubscribed(channelId);
       }
       if (response.status === 200) {
         setSubscribed(false);
@@ -64,10 +87,8 @@ function VideoSection({
 
   const isUserOwner = () => {
     if (currentUserData?._id === videoToBePlayed?.owner._id) {
-      // setDisableSubscribed(true);
       return true;
     } else {
-      // setDisableSubscribed(false);
       return false;
     }
   };
@@ -75,12 +96,9 @@ function VideoSection({
   const toggleLike = async (videoId) => {
     try {
       const response = await axios.post(`/api/v1/likes/toggle/v/${videoId}`);
-      console.log("Response: ", response.data);
-      if (response.status === 201 || response.status === 200) {
-        setLiked((prev) => !prev);
-        getLikesCount(videoToBePlayed?._id);
-        dispatch(fetchUserLikedVideos()); 
-      }
+      setLiked((prev) => !prev);
+      getLikesCount(videoToBePlayed?._id);
+      dispatch(fetchUserLikedVideos());
     } catch (error) {
       console.error("Error adding like: ", error);
     }
@@ -92,10 +110,7 @@ function VideoSection({
         const response = await axios.post(
           `/api/v1/likes/toggle/v/likes/${videoId}`
         );
-        console.log("Response: ", response.data);
-        if (response.status === 200) {
-          setliksCount(response.data.data);
-        }
+        setliksCount(response.data.data);
       } catch (error) {
         console.error("Error adding like: ", error);
       }
@@ -118,13 +133,13 @@ function VideoSection({
         isMobile ? "w-full" : "w-[60%] "
       }  `}
     >
-      <div className="videoContainer w-full rounded-lg ">
+      <div className={`videoContainer w-full ${isMobile ? "max-h-[300px]" : "max-h-[500px]"}  rounded-lg `}>
         <video
           src={videoToBePlayed?.videoFile}
-          className="w-full rounded-lg border"
+          className="w-full h-full rounded-lg border "
           controls
           autoPlay
-        ></video>
+        />
       </div>
 
       {isMobile && inMobileDisplayAllComments ? (
@@ -192,6 +207,27 @@ function VideoSection({
                   <p>Add to playlist</p>
                 </div>
               </Link>
+
+              {videoToBePlayed?.owner?._id === userId && (
+                <DropdownComp
+                  trigger={<EllipsisVertical size={30} />}
+                  items={[
+                    {
+                      label: "Edit Video",
+                      link: `/edit-video/${videoToBePlayed?._id}`,
+                      className:
+                        "w-full bg-black rounded-lg text-white text-center p-2",
+                    },
+                    {
+                      label: "Delete Video",
+                      onClick: () => handleDelete(videoToBePlayed._id),
+                      className:
+                        "w-full bg-red-400 text-black hover:bg-red-500",
+                    },
+                  ]}
+                  menuClassName={"w-60"}
+                />
+              )}
             </div>
           </div>
 

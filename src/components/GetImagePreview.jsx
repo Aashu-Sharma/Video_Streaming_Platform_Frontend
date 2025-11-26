@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 
 function GetImageOrVideoPreview({
   label,
@@ -15,19 +16,29 @@ function GetImageOrVideoPreview({
   setValue,
   clearErrors,
   removeClassName,
+  allowRemove,
 }) {
+  const maxFileSize = 100 * 1024 * 1024;
   const [preview, setPreview] = useState(defaultValue || "");
   const handleRemove = () => {
     setPreview("");
-    setValue(name, null)
+    setValue(name, null);
     clearErrors(name);
   };
 
   const handlePreview = (event) => {
     console.log("function ran");
     const file = event.target.files[0];
-    console.log(file);
-    if (file) {
+    if (file && file.size > maxFileSize) {
+      console.log("large file detected");
+      console.log(file);
+      toast.info(
+        `Can't upload video. Videos must be less than ${
+          maxFileSize / (1024 * 1024)
+        } MB`
+      );
+      return;
+    } else {
       const fileUrl = URL.createObjectURL(file);
       setPreview(fileUrl);
       return file;
@@ -35,10 +46,10 @@ function GetImageOrVideoPreview({
   };
 
   useEffect(() => {
-    if(defaultValue ){
-      setPreview(defaultValue)
+    if (defaultValue) {
+      setPreview(defaultValue);
     }
-  }, [defaultValue])
+  }, [defaultValue]);
 
   return (
     <div className={`${className} `}>
@@ -51,18 +62,24 @@ function GetImageOrVideoPreview({
               className={`w-full h-full ${videoClassName}`}
               type="video/mp4"
             />
-            <button onClick={() => handleRemove()}>
-              <X className="z-[2] absolute top-0 right-0 text-red-500" />
-            </button>
+            {allowRemove && (
+              <button onClick={() => handleRemove()}>
+                <X
+                  className={`z-[2] absolute top-0 right-0 text-red-500 ${removeClassName}`}
+                />
+              </button>
+            )}
           </>
         ) : (
           <>
             <img src={preview} className={` ${imgClassName}`} />
-            <button onClick={() => handleRemove()}>
-              <X
-                className={`z-[2] absolute top-0 right-0 text-red-500 ${removeClassName}`}
-              />
-            </button>
+            {allowRemove && (
+              <button onClick={() => handleRemove()}>
+                <X
+                  className={`z-[2] absolute top-0 right-0 text-red-500 ${removeClassName}`}
+                />
+              </button>
+            )}
           </>
         )
       ) : (

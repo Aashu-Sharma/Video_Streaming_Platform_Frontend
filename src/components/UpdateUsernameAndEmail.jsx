@@ -36,7 +36,7 @@ function UpdateUsernameAndEmail({ username, email }) {
     } catch (error) {
       toast.error(
         error?.message ||
-          `Failed to update avatar ${newData.username || newData.email}`
+          `Failed to update ${newData.username || newData.email}`
       );
     } finally {
       setIsSubmitting(false);

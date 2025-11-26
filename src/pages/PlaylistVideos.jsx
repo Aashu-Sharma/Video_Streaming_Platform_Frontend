@@ -15,7 +15,7 @@ function PlaylistVideos() {
   const isMobile = deviceWidth();
   const navigate = useNavigate();
   const { playlistId } = useParams();
-  const { userPlaylists, status, error, statusCode } = useSelector(
+  const { userPlaylists} = useSelector(
     (state) => state.playlists
   );
   const playlist = userPlaylists?.find(

@@ -87,6 +87,25 @@ export const removeVideoFromPlaylist = createAsyncThunk(
   }
 );
 
+export const removeVideoFromAllPlaylists = createAsyncThunk(
+  "playlists/removeVideoFromAllPlaylists",
+  async (videoId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `/api/v1/playlist/removefromAll/${videoId}`
+      );
+      console.log("Response data : ", response.data);
+      return videoId;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.log("Error data: ", error.response.data);
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: "Something went wrong" });
+    }
+  }
+);
+
 const playlistSlice = createSlice({
   name: "playlists",
   initialState: {
@@ -155,7 +174,7 @@ const playlistSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(removeVideoFromPlaylist.pending, (state, action) => {
+      .addCase(removeVideoFromPlaylist.pending, (state) => {
         state.status = "loading";
       })
       .addCase(removeVideoFromPlaylist.fulfilled, (state, action) => {
@@ -173,6 +192,22 @@ const playlistSlice = createSlice({
         });
       })
       .addCase(removeVideoFromPlaylist.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
+      .addCase(removeVideoFromAllPlaylists.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.userPlaylists = state.userPlaylists.map((playlist) => {
+          if (playlist.videos.includes(action.payload)) {
+            return playlist.videos.filter(
+              (video) => video._id !== action.payload
+            );
+          }
+          return playlist;
+        });
+      })
+      .addCase(removeVideoFromAllPlaylists.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

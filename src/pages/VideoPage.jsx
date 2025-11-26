@@ -12,7 +12,6 @@ function VideoPage() {
   const dispatch = useDispatch();
   const videos = useSelector((state) => state.videos.videos);
   const currentUserData = useSelector((state) => state.auth.userData);
-  const watchHistory = useSelector((state) => state.watchHistory.history);
   const [videoToBePlayed, setVideoToBePlayed] = useState(null);
   const [videoList, setVideoList] = useState(null);
   const [inMobileDisplayAllComments, setInMobileDisplayAllComments] =
@@ -32,9 +31,8 @@ function VideoPage() {
 
   const removeVideoBeingWatched = () => {
     const videosToBedisplayed = videos?.filter(
-      (video) => video?._id !== videoToBePlayed?._id
+      (video) => video?._id !== videoToBePlayed?._id && video.isPublished !== false
     );
-    console.log("Videostobedisplayed: ", videosToBedisplayed);
     setVideoList(videosToBedisplayed);
   };
 
@@ -47,8 +45,6 @@ function VideoPage() {
       dispatch(fetchUserWatchHistory());
     }
   }, [videoToBePlayed])
-
-  console.log("Watch History in Video Page: ", watchHistory);
 
   useEffect(() => {
     removeVideoBeingWatched();

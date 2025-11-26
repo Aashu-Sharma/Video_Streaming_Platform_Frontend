@@ -28,6 +28,7 @@ function ListPlaylists({ playlists, className, handleDelete, editPlaylist }) {
                   src={playlist.videos[0]?.videoFile}
                   autoPlay
                   loop
+                  muted
                   className="w-full h-full object-cover border"
                 />
               ) : (

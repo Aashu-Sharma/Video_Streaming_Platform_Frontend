@@ -8,9 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentUser, fetchUserLikedVideos } from "./store/authSlice.js";
 import { fetchUserPlaylists } from "./store/playlistSlice.js";
 import { fetchUserWatchHistory } from "./store/watchHistorySlice.js";
-import { setVideoData } from "./store/videoSlice";
-import axios from "axios";
-import { ToastContainer } from "react-toastify";
+import { fetchAllVideos } from "./store/videoSlice";
 import {
   fetchProfileData,
   fetchProfileVideos,
@@ -21,17 +19,7 @@ function App() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const userId = userData?._id;
-
-  const getAllVideos = async () => {
-    try {
-      const response = await axios.get(`/api/v1/videos`);
-      if (response.status === 200) {
-        dispatch(setVideoData(response.data.data));
-      }
-    } catch (error) {
-      console.error("Error fetching videos: ", error);
-    }
-  };
+  console.log("userId: ", userId);
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
@@ -39,7 +27,7 @@ function App() {
 
   useEffect(() => {
     if (userId) {
-      getAllVideos();
+      dispatch(fetchAllVideos());
       dispatch(fetchUserPlaylists());
       dispatch(fetchUserLikedVideos());
       dispatch(fetchUserWatchHistory());
@@ -50,10 +38,9 @@ function App() {
       dispatch(fetchProfilePosts({ profileType: "user" }));
     }
   }, [userId]);
-  
+
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
       <SidebarProvider defaultOpen={false}>
         <div className="p-0 m-0 bg-black max-w-screen w-full min-h-screen flex">
           <AppSidebar />

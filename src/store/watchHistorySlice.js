@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const fetchUserWatchHistory = createAsyncThunk(
   "watchHistory/fetchUserWatchHistory",
-  async (rejectWithValue) => {
+  async (_, {rejectWithValue}) => {
     try {
       console.log("Fetching user watch history...");
       const response = await axios.get(`/api/v1/users/watchHistory`);
@@ -21,7 +21,7 @@ export const removeVideoFromWatchHistory = createAsyncThunk(
   "watchHistory/removeVideoFromWatchHistory",
   async (videoId, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `/api/v1/users/watchHistory/${videoId}`
       );
       return videoId;

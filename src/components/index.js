@@ -25,6 +25,7 @@ import PlaylistModal from './PlaylistModal.jsx';
 import UpdateCoverImageAndAvatar from './UpdateCoverImageAndAvatar.jsx';
 import UpdateUsernameAndEmail from './UpdateUsernameAndEmail.jsx';
 import UpdatePassword from './UpdatePassword.jsx';
+import VideoForm from './VideoForm.jsx';
 
 export {
   Header,
@@ -54,4 +55,5 @@ export {
   UpdateCoverImageAndAvatar,
   UpdatePassword,
   UpdateUsernameAndEmail,
+  VideoForm
 };

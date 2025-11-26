@@ -49,7 +49,6 @@ function UpdateCoverImageAndAvatar({ coverImage, avatar }) {
     if (toUpdate.length === 0) {
       return;
     }
-    
 
     setIsSubmitting(true);
 
@@ -108,6 +107,7 @@ function UpdateCoverImageAndAvatar({ coverImage, avatar }) {
           label={<Plus className="text-white w-[30px] h-[30px]" />}
           defaultValue={coverImage}
           setValue={setValue}
+          allowRemove={true}
         />
 
         <div className="avatar w-40 h-40 rounded-full border absolute bottom-0 left-0">
@@ -122,6 +122,7 @@ function UpdateCoverImageAndAvatar({ coverImage, avatar }) {
             removeClassName={"top-[15px] right-[15px]"}
             defaultValue={avatar}
             setValue={setValue}
+            allowRemove={true}
           />
         </div>
       </div>

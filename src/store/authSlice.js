@@ -20,7 +20,6 @@ export const fetchUserLikedVideos = createAsyncThunk(
   "auth/fetchUserLikedVideos",
   async (rejectWithValue) => {
     try {
-      console.log("Fetching User LikedVideos....");
       const response = await axios.get("/api/v1/likes/videos");
       return response.data.data;
     } catch (error) {

@@ -13,7 +13,7 @@ function ListVideos({ videoList, className }) {
         isMobile ? className : className
       } p-4 `}
     >
-      {videoList.map((video) => (
+      {videoList?.map((video) => (
         <Link key={video._id} to={`/video/${video._id}`}>
           <VideoCard
             elem={video}
