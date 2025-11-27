@@ -17,7 +17,6 @@ function VideoCard({
 }) {
   const isMobile = deviceWidth();
   const [hoveredVideoId, setHoveredVideoId] = useState(null);
-  console.log("elem in VideoCard: ", elem);
   return (
     <div
       className={`w-full ${className} rounded-lg  overflow-hidden`}

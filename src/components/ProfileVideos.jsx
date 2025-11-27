@@ -15,11 +15,23 @@ function ProfileVideos() {
     (video) => video.isPublished === filter
   );
 
+  if (channelVideos.length === 0)
+    return (
+      <p
+        className={` ${
+          isMobile ? "text-lg" : "text-4xl text-center "
+        }  text-white m-auto`}
+      >
+        No Videos to show for this user
+      </p>
+    );
+
   return (
     <div className={`w-full h-full ${isUserProfile && "flex flex-col gap"} `}>
       {isUserProfile && (
-        <select className="w-[150px] ml-4 mt-2 p-2 bg-gray-800 text-white rounded-md border border-gray-600" 
-        onChange={(e) => setFilter(e.target.value === "true")}
+        <select
+          className="w-[150px] ml-4 mt-2 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
+          onChange={(e) => setFilter(e.target.value === "true")}
         >
           <option value="true">Public</option>
           <option value="false">Private</option>

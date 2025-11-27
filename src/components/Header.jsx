@@ -5,9 +5,10 @@ import DropdownComp from "./DropdownComp";
 import Avatar from "./AvatarComp.jsx";
 import deviceWidth from "../utils/deviceWidth.js";
 import { useDispatch } from "react-redux";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { logOut } from "../store/authSlice.js";
 import axios from "axios";
+import { clearAllPreviousData } from "../store/profileSlice.js";
 
 function Header({ userData }) {
   // const [userLoggedIn, setUserLoggedIn] = useState(false);
@@ -20,11 +21,10 @@ function Header({ userData }) {
   const handleLogout = async () => {
     try {
       const response = await axios.post("/api/v1/users/logOut", {});
-      if (response.status === 200) {
-        console.log(response.data.message || "User logged out ");
-        dispatch(logOut());
-        navigate("/")
-      }
+      console.log(response.data.message || "User logged out ");
+      dispatch(clearAllPreviousData());
+      dispatch(logOut());
+      navigate("/");
     } catch (error) {
       console.error("Error logging out: ", error);
       // Handle error, maybe show a notification to the user

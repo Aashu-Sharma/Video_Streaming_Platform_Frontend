@@ -8,13 +8,11 @@ import {
 } from "lucide-react";
 import { checkTimePassed } from "../utils/timeFormatter.js";
 import { DropdownComp } from "./index.js";
-import { toast } from "react-toastify";
-import { setUserPosts } from "../store/authSlice.js";
 import { useDispatch } from "react-redux";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import axios from "axios";
 
-function ListPosts({ postList, isUser }) {
+function ListPosts({ postList, isUser, handleDelete }) {
   const [imageIndexes, setImageIndexes] = useState({});
   const [likedPosts, setLikedPosts] = useState([]);
   const [postsLikes, setPostsLikes] = useState({});
@@ -22,19 +20,6 @@ function ListPosts({ postList, isUser }) {
 
   const setActiveIndex = (postId, index) => {
     setImageIndexes((prev) => ({ ...prev, [postId]: index }));
-  };
-
-  const handleDelete = async (postId) => {
-    try {
-      const response = await axios.delete(`/api/v1/tweets/${postId}`);
-      if (response.status === 200) {
-        postList = postList.filter((post) => post._id !== postId);
-        dispatch(setUserPosts(postList));
-        toast.success(response.data.message);
-      }
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const getLikedPosts = async (tweetIds) => {
@@ -191,11 +176,11 @@ function ListPosts({ postList, isUser }) {
                       <ArrowLeft size={20} />
                     </Button>
                   )}
-                  <div className="imageContent w-full ">
+                  <div className="imageContent w-full max-h-[400px]  overflow-hidden rounded-lg">
                     <img
                       src={post?.images[activeIndex]}
                       alt="post-img"
-                      className="w-full min-h-[400px] object-cover rounded-lg"
+                      className="w-full  object-cover rounded-lg"
                     />
                   </div>
 

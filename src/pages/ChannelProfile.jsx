@@ -39,6 +39,11 @@ function ChannelProfile() {
       );
     }
   }, [dispatch, channelProfileData]);
+
+  if (!channelProfileData || !channelVideos || !channelPosts) {
+    return <div className="text-center text-4xl m-auto text-gray-500">Loading...</div>;
+  }
+  
   return (
     <div className="bg-black w-full h-full min-h-screen text-white">
       <Profile

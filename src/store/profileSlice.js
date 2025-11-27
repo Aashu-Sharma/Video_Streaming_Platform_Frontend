@@ -130,6 +130,10 @@ const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
+    setUserPosts: (state, action) => {
+      state.profilePosts = action.payload;
+    },
+
     clearAllPreviousData: (state) => {
       state.profileData = null;
       state.profileVids = null;
@@ -215,5 +219,5 @@ const profileSlice = createSlice({
   },
 });
 
-export const { clearAllPreviousData } = profileSlice.actions;
+export const { clearAllPreviousData, setUserPosts } = profileSlice.actions;
 export default profileSlice.reducer;

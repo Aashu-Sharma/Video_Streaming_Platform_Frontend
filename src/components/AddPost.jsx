@@ -101,14 +101,10 @@ function AddPost({ userData, userPosts }) {
 
   useEffect(() => {
     if (fields.length === 0) {
-      console.log("fields length: ", fields.length);
       setImagePreview({});
       setActiveIndex(null);
     }
   }, [fields]);
-
-  console.log("Fields state: ", fields);
-  console.log("activeIndex: ", activeIndex);
 
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">

@@ -29,7 +29,7 @@ function Home() {
       <ListVideos
         videoList={publicVideos}
         className={
-          isMobile ? "grid grid-cols-1 gap-2" : "grid grid-cols-3 gap-4"
+          isMobile ? "flex flex-col gap-4" : "grid grid-cols-3 gap-4"
         }
       />
     </div>

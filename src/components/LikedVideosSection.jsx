@@ -12,7 +12,6 @@ function LikedVideosSection() {
   const { activeHistory, canMoveLeft, canMoveRight, moveLeft, moveRight } =
     usePagination(likedVideos, isMobile ? 2 : 4, 10);
 
-  console.log("Liked Videos:", likedVideos);
   return (
     <Section
       sectionTitle={"Your Liked Videos"}

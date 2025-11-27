@@ -63,10 +63,6 @@ const authSlice = createSlice({
     setUserVideos: (state, action) => {
       state.userVideos = action.payload;
     },
-
-    setUserPosts: (state, action) => {
-      state.userPosts = action.payload;
-    },
   },
 
   extraReducers: (builder) => {

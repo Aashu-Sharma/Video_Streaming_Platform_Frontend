@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link} from "react-router-dom";
 import {
   WatchHistory,
@@ -9,7 +9,6 @@ import {
 import { deviceWidth } from "../utils/index.js";
 
 function Library() {
-  const dispatch = useDispatch();
   const profileData = useSelector((state) => state.auth.userData);
   const isMobile = deviceWidth();
 

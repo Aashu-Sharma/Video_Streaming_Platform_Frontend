@@ -9,17 +9,11 @@ import { fetchCurrentUser, fetchUserLikedVideos } from "./store/authSlice.js";
 import { fetchUserPlaylists } from "./store/playlistSlice.js";
 import { fetchUserWatchHistory } from "./store/watchHistorySlice.js";
 import { fetchAllVideos } from "./store/videoSlice";
-import {
-  fetchProfileData,
-  fetchProfileVideos,
-  fetchProfilePosts,
-} from "./store/profileSlice.js";
 
 function App() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const userId = userData?._id;
-  console.log("userId: ", userId);
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
@@ -31,11 +25,11 @@ function App() {
       dispatch(fetchUserPlaylists());
       dispatch(fetchUserLikedVideos());
       dispatch(fetchUserWatchHistory());
-      dispatch(
-        fetchProfileData({ profileType: "user", username: userData.username })
-      );
-      dispatch(fetchProfileVideos({ profileType: "user" }));
-      dispatch(fetchProfilePosts({ profileType: "user" }));
+      // dispatch(
+      //   fetchProfileData({ profileType: "user", username: userData.username })
+      // );
+      // dispatch(fetchProfileVideos({ profileType: "user" }));
+      // dispatch(fetchProfilePosts({ profileType: "user" }));
     }
   }, [userId]);
 

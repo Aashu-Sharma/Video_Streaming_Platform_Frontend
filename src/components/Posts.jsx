@@ -1,23 +1,39 @@
-import React from 'react';
-import {AddPost, ListPosts} from './index.js';
+import React from "react";
+import { AddPost, ListPosts } from "./index.js";
 import { useOutletContext } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { deviceWidth } from "../utils/index.js";
 
 function Posts() {
-  const {channelPosts, profileData} = useOutletContext();
+  const { channelPosts, profileData, deletePost } = useOutletContext();
   const userData = useSelector((state) => state.auth.userData);
   const isUser = profileData?._id === userData?._id;
-  if(!profileData) return <p>Loading......</p>;
-  return (
+  const isMobile = deviceWidth();
 
-    <div className='w-3/5 h-full flex flex-col gap-4 p-4 '>
-      
-      {isUser && (
-        <AddPost userData={profileData} userPosts={channelPosts}/>
+  return (
+    <div
+      className={` ${
+        isMobile ? "w-full " : "w-3/5"
+      } h-full flex flex-col gap-4 p-4 `}
+    >
+      {isUser && <AddPost userData={profileData} userPosts={channelPosts} />}
+      {channelPosts.length === 0 ? (
+        <p
+          className={` ${
+            isMobile ? "text-lg" : "text-4xl text-center m-auto"
+          }  text-white `}
+        >
+          No Posts to show for this user
+        </p>
+      ) : (
+        <ListPosts
+          postList={channelPosts}
+          isUser={isUser}
+          handleDelete={deletePost}
+        />
       )}
-      <ListPosts postList = {channelPosts} isUser={isUser}/>
     </div>
-  )
+  );
 }
 
 export default Posts;

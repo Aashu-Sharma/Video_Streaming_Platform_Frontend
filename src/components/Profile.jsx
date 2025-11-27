@@ -1,21 +1,30 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, Outlet } from "react-router-dom";
+import { deviceWidth } from "../utils/index.js";
 
-function Profile({ profileData, channelVideos, channelPosts, user }) {
+function Profile({ profileData, channelVideos, channelPosts, user, deletePost }) {
   const userData = useSelector((state) => state.auth.userData);
   const isUserProfile = profileData?._id === userData?._id;
+  const isMobile = deviceWidth();
+
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="upper-container w-full h-[200px] p-8 flex flex-row items-center gap-8 border-b-2 border-gray-200 ">
-        <div className="Profile-image-circle w-[150px] h-[150px] rounded-full border overflow-hidden ">
+      <div className={`upper-container w-full  ${isMobile ? "p-4 h-[150px]" : "p-8 h-[200px]"} flex flex-row items-center gap-8 border-b-2 border-gray-200 `}>
+        <div
+          className={`Profile-image-circle ${
+            isMobile ? "w-16 h-16" : "w-30 h-30"
+          } rounded-full border overflow-hidden `}
+        >
           <img
             src={profileData?.avatar}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="Profile-details">
-          <h1 className="text-3xl font-bold mb-2">
+          <h1 className={`${
+              isMobile ? "text-base mb-1" : "text-3xl font-bold mb-2"
+            }  `}>
             {profileData?.username?.toUpperCase()}
           </h1>
           <p className="text-sm text-gray-200 mb-2">{`Total Subscribers: ${profileData?.subscribersCount}`}</p>
@@ -39,12 +48,7 @@ function Profile({ profileData, channelVideos, channelPosts, user }) {
             )}
           </div>
         </div>
-
-        {!channelVideos || channelVideos.length === 0 ? (
-          <p>No videos found for this user</p>
-        ) : (
-          <Outlet context={{ channelVideos, channelPosts, profileData }} />
-        )}
+        <Outlet context={{ channelVideos, channelPosts, profileData, deletePost }} />
       </div>
     </div>
   );
