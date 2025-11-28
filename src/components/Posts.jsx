@@ -20,10 +20,12 @@ function Posts() {
       {channelPosts.length === 0 ? (
         <p
           className={` ${
-            isMobile ? "text-lg" : "text-4xl text-center m-auto"
+            isMobile ? "text-lg" : "text-4xl "
           }  text-white `}
         >
-          No Posts to show for this user
+          {isUser
+            ? "You have no posts yet. Create your first post!"
+            : "This user has no posts yet."}
         </p>
       ) : (
         <ListPosts

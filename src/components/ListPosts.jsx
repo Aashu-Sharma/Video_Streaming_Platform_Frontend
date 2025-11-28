@@ -93,8 +93,6 @@ function ListPosts({ postList, isUser, handleDelete }) {
     }
   };
 
-  console.log("ChannelPosts: ", postList);
-
   useEffect(() => {
     if (!postList || postList.length === 0) {
       console.log("No posts available: ", postList);
@@ -121,7 +119,7 @@ function ListPosts({ postList, isUser, handleDelete }) {
               }`}
             >
               <div className="userDetails flex flex-row gap-2 items-center">
-                <div className="Profile-image-circle w-[40px] h-[40px] rounded-full border overflow-hidden ">
+                <div className="Profile-image-circle w-10 h-10 rounded-full border overflow-hidden ">
                   <img
                     src={post?.owner?.avatar}
                     className="w-full h-full object-cover"
@@ -163,9 +161,10 @@ function ListPosts({ postList, isUser, handleDelete }) {
               </div>
               {post?.images && post?.images.length > 0 && (
                 <div className="imgBox w-full flex flex-row items-center justify-center gap-2">
-                  {activeIndex > 0 && post?.images[activeIndex - 1] && (
+                  {/* {activeIndex > 0 && post?.images[activeIndex - 1] && ( */}
                     <Button
                       className={" text-white w-[50px] "}
+                      disabled = {activeIndex === 0}
                       onClick={(e) => {
                         e.preventDefault();
                         if (activeIndex > 0) {
@@ -175,19 +174,20 @@ function ListPosts({ postList, isUser, handleDelete }) {
                     >
                       <ArrowLeft size={20} />
                     </Button>
-                  )}
-                  <div className="imageContent w-full max-h-[400px]  overflow-hidden rounded-lg">
+                  {/* )} */}
+                  <div className="imageContent w-full h-96  overflow-hidden rounded-lg">
                     <img
                       src={post?.images[activeIndex]}
                       alt="post-img"
-                      className="w-full  object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
 
-                  {activeIndex < post?.images.length - 1 &&
-                    post?.images[activeIndex + 1] && (
+                  {/* {activeIndex < post?.images.length - 1 &&
+                    post?.images[activeIndex + 1] && ( */}
                       <Button
                         className={" text-white w-[50px] "}
+                        disabled={activeIndex === post?.images.length - 1}
                         onClick={(e) => {
                           e.preventDefault();
                           if (activeIndex < post?.images.length - 1) {
@@ -197,7 +197,7 @@ function ListPosts({ postList, isUser, handleDelete }) {
                       >
                         <ArrowRight size={20} />
                       </Button>
-                    )}
+                    {/* )} */}
                 </div>
               )}
             </div>

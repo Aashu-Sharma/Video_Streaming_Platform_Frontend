@@ -16,46 +16,26 @@ export const fetchProfileData = createAsyncThunk(
   }
 );
 
-export const fetchProfileVideos = createAsyncThunk(
-  "profile/fetchProfileVideos",
-  async ({ profileType, userId }, { rejectWithValue }) => {
-    try {
-      let url =
-        profileType !== "user"
-          ? `/api/v1/videos?userId=${userId}`
-          : "/api/v1/dashboard/videos";
+// export const fetchProfileVideos = createAsyncThunk(
+//   "profile/fetchProfileVideos",
+//   async ({ profileType, userId }, { rejectWithValue }) => {
+//     try {
+//       let url =
+//         profileType !== "user"
+//           ? `/api/v1/videos?userId=${userId}`
+//           : "/api/v1/dashboard/videos";
 
-      const response = await axios.get(url);
-      return response.data.data;
-    } catch (error) {
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue({ message: "Something went wrong" });
-    }
-  }
-);
-
-export const fetchProfilePosts = createAsyncThunk(
-  "profile/fetchProfilePosts",
-  async ({ profileType, userId }, { rejectWithValue }) => {
-    try {
-      let url =
-        profileType !== "user"
-          ? `/api/v1/tweets/user/${userId}`
-          : `/api/v1/dashboard/posts`;
-
-      const response = await axios.get(url);
-      return response.data.data;
-    } catch (error) {
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue({ message: "Something went wrong" });
-    }
-  }
-);
-
+//       const response = await axios.get(url);
+//       return response.data.data;
+//     } catch (error) {
+//       if (error.response && error.response.data) {
+//         return rejectWithValue(error.response.data);
+//       }
+//       return rejectWithValue({ message: "Something went wrong" });
+//     }
+//   }
+// );
+ 
 export const updateUserCoverImage = createAsyncThunk(
   "profile/updateUserCoverImage",
   async (data, { rejectWithValue }) => {
@@ -118,30 +98,19 @@ export const updateUserPassword = createAsyncThunk(
 
 const initialState = {
   profileData: null,
-  profileVids: null,
-  profilePosts: null,
   errors: null,
   datastatus: "idle",
-  videostatus: "idle",
-  postsstatus: "idle",
 };
 
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    setUserPosts: (state, action) => {
-      state.profilePosts = action.payload;
-    },
 
     clearAllPreviousData: (state) => {
       state.profileData = null;
-      state.profileVids = null;
-      state.profilePosts = null;
       state.errors = null;
       state.datastatus = "idle";
-      state.videostatus = "idle";
-      state.postsstatus = "idle";
     },
   },
   extraReducers: (builder) => {
@@ -158,29 +127,6 @@ const profileSlice = createSlice({
         state.errors = action.payload;
       })
 
-      .addCase(fetchProfileVideos.pending, (state) => {
-        state.videostatus = "loading";
-      })
-      .addCase(fetchProfileVideos.fulfilled, (state, action) => {
-        state.videostatus = "succeeded";
-        state.profileVids = action.payload;
-      })
-      .addCase(fetchProfileVideos.rejected, (state, action) => {
-        state.videostatus = "failed";
-        state.errors = action.payload;
-      })
-
-      .addCase(fetchProfilePosts.pending, (state) => {
-        state.postsstatus = "loading";
-      })
-      .addCase(fetchProfilePosts.fulfilled, (state, action) => {
-        state.postsstatus = "succeeded";
-        state.profilePosts = action.payload;
-      })
-      .addCase(fetchProfilePosts.rejected, (state, action) => {
-        state.postsstatus = "failed";
-        state.errors = action.payload;
-      })
 
       .addCase(updateUserCoverImage.fulfilled, (state, action) => {
         state.profileData = {
@@ -219,5 +165,5 @@ const profileSlice = createSlice({
   },
 });
 
-export const { clearAllPreviousData, setUserPosts } = profileSlice.actions;
+export const { clearAllPreviousData } = profileSlice.actions;
 export default profileSlice.reducer;

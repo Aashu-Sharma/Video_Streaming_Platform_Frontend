@@ -28,11 +28,8 @@ function CommentForm({
 
   useEffect(() => {
     if (comment?.content) {
-      console.log("inside if: ", watchContent);
-      // watchContent.trim() === comment.content ? setDisabled(true) : setDisabled(false)
       setDisabled(watchContent.trim() === comment.content);
     } else {
-      console.log("inside else: ", watchContent);
       setDisabled(!watchContent.trim());
     }
   }, [comment, watchContent]);

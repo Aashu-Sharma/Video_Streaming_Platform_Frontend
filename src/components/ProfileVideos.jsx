@@ -22,7 +22,9 @@ function ProfileVideos() {
           isMobile ? "text-lg" : "text-4xl text-center "
         }  text-white m-auto`}
       >
-        No Videos to show for this user
+        {isUserProfile
+          ? "You have no videos yet. Upload your first video!"
+          : "This user has no videos yet."}
       </p>
     );
 

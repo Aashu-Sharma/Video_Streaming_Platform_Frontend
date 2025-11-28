@@ -4,33 +4,35 @@ import { Profile } from "../components/index.js";
 import {
   clearAllPreviousData,
   fetchProfileData,
-  fetchProfilePosts,
-  fetchProfileVideos,
 } from "../store/profileSlice.js";
+import {
+  fetchProfilePosts,
+  setUserPosts,
+  clearPosts,
+} from "../store/postSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 
 function ChannelProfile() {
   const { user } = useParams();
   const channelProfileData = useSelector((state) => state.profile.profileData);
-  const channelVideos = useSelector((state) => state.profile.profileVids);
-  const channelPosts = useSelector((state) => state.profile.profilePosts);
+  const channelPosts = useSelector((state) => state.posts.posts);
+  const videos = useSelector((state) => state.videos.videos);
+
+  const channelVideos = videos?.filter(
+    (video) => video.owner._id === channelProfileData?._id
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchProfileData({ profileType: "channel", username: user }));
     return () => {
       dispatch(clearAllPreviousData());
+      dispatch(clearPosts());
     };
   }, [dispatch, user]);
 
   useEffect(() => {
     if (channelProfileData) {
-      dispatch(
-        fetchProfileVideos({
-          profileType: "channel",
-          userId: channelProfileData._id,
-        })
-      );
       dispatch(
         fetchProfilePosts({
           profileType: "channel",
@@ -41,9 +43,13 @@ function ChannelProfile() {
   }, [dispatch, channelProfileData]);
 
   if (!channelProfileData || !channelVideos || !channelPosts) {
-    return <div className="text-center text-4xl m-auto text-gray-500">Loading...</div>;
+    return (
+      <div className="text-center text-4xl m-auto text-gray-500">
+        Loading...
+      </div>
+    );
   }
-  
+
   return (
     <div className="bg-black w-full h-full min-h-screen text-white">
       <Profile

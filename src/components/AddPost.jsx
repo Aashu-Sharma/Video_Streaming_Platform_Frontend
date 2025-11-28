@@ -4,14 +4,11 @@ import { FormInput } from "./index.js";
 import { Button } from "./ui/button.jsx";
 import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { setUserPosts } from "../store/authSlice.js";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { createPost } from "../store/postSlice.js";
 
-// todo : add validation for images and content
-// todo: instant ui update after post creation
 
-function AddPost({ userData, userPosts }) {
+function AddPost({ userData, userPosts, post }) {
   const {
     register,
     handleSubmit,
@@ -34,7 +31,6 @@ function AddPost({ userData, userPosts }) {
       maxLength: 3,
     },
   });
-  // const [displayImageForm, setDisplayImageForm] = useState(false);
   const dispatch = useDispatch();
   const [imagePreview, setImagePreview] = useState({});
   const [disabled, setDisabled] = useState(null);
@@ -64,8 +60,9 @@ function AddPost({ userData, userPosts }) {
   };
 
   const submit = async (data) => {
-    console.log("FormData: ", data);
-    console.log("type of images data: ", typeof data.images);
+    if (post) {
+    } else {
+    }
     const postData = new FormData();
     postData.append("content", data.content);
     if (data.images && data.images.length > 0) {
@@ -74,25 +71,13 @@ function AddPost({ userData, userPosts }) {
         if (fileList && fileList[0]) postData.append("images", fileList[0]);
       }
     }
-    postData.forEach((value, key) => {
-      console.log(key, ": ", value);
-    });
     try {
-      const response = await axios.post(`/api/v1/tweets/create`, postData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.status === 201) {
-        console.log("Post created successfully: ", response.data.data);
-        toast.success("Post created successfully!");
-        setValue("content", "");
-        setValue("images", []);
-        setImagePreview({});
-        setActiveIndex(null);
-        userPosts = [response.data.data, ...userPosts];
-        dispatch(setUserPosts(userPosts));
-      }
+      await dispatch(createPost(postData)).unwrap();
+      toast.success("Post created successfully!");
+      setValue("content", "");
+      setValue("images", []);
+      setImagePreview({});
+      setActiveIndex(null);
     } catch (error) {
       console.error(error.response.data);
       console.log("Error message: ", error.response.data.message);
@@ -109,7 +94,7 @@ function AddPost({ userData, userPosts }) {
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">
       <div className="userDetails flex flex-row gap-2 items-center">
-        <div className="Profile-image-circle w-[40px] h-[40px] rounded-full border overflow-hidden ">
+        <div className="Profile-image-circle w-10 h-10 rounded-full border overflow-hidden ">
           <img src={userData?.avatar} className="w-full h-full object-cover" />
         </div>
         <div className="text-lg ">
