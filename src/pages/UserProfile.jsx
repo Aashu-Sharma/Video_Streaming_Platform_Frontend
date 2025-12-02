@@ -23,17 +23,6 @@ function UserProfile() {
     (video) => video.owner._id === profileData?._id
   );
 
-  const handleDelete = async (postId) => {
-    try {
-      const response = await axios.delete(`/api/v1/tweets/${postId}`);
-      posts = profilePosts.filter((post) => post._id !== postId);
-      dispatch(setUserPosts(posts));
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
     if (loggedInUser?._id) {
       dispatch(
@@ -67,7 +56,6 @@ function UserProfile() {
         profileData={profileData}
         channelVideos={profileVids}
         channelPosts={posts}
-        deletePost={handleDelete}
       />
     </div>
   );

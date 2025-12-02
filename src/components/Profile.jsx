@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, Outlet } from "react-router-dom";
 import { deviceWidth } from "../utils/index.js";
 
-function Profile({ profileData, channelVideos, channelPosts, user, deletePost }) {
+function Profile({ profileData, channelVideos, channelPosts, user }) {
   const userData = useSelector((state) => state.auth.userData);
   const isUserProfile = profileData?._id === userData?._id;
   const isMobile = deviceWidth();
@@ -48,7 +48,7 @@ function Profile({ profileData, channelVideos, channelPosts, user, deletePost })
             )}
           </div>
         </div>
-        <Outlet context={{ channelVideos, channelPosts, profileData, deletePost }} />
+        <Outlet context={{ channelVideos, channelPosts, profileData }} />
       </div>
     </div>
   );

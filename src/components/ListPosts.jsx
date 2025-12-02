@@ -5,18 +5,25 @@ import {
   ArrowRight,
   EllipsisVertical,
   ThumbsUp,
+  X,
 } from "lucide-react";
 import { checkTimePassed } from "../utils/timeFormatter.js";
-import { DropdownComp } from "./index.js";
+import { DropdownComp, PostForm } from "./index.js";
 import { useDispatch } from "react-redux";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import axios from "axios";
+import { deletePost } from "../store/postSlice.js";
 
-function ListPosts({ postList, isUser, handleDelete }) {
+function ListPosts({ postList, isUser }) {
   const [imageIndexes, setImageIndexes] = useState({});
   const [likedPosts, setLikedPosts] = useState([]);
   const [postsLikes, setPostsLikes] = useState({});
+  const [showEditModal, setShowEditModal] = useState(null);
   const dispatch = useDispatch();
+
+  const handleDelete = (tweetId) => {
+    dispatch(deletePost(tweetId))
+  }
 
   const setActiveIndex = (postId, index) => {
     setImageIndexes((prev) => ({ ...prev, [postId]: index }));
@@ -99,7 +106,6 @@ function ListPosts({ postList, isUser, handleDelete }) {
       return;
     }
     const postIds = postList?.map((post) => post._id);
-    console.log("Post Ids: ", postIds);
     getLikedPosts(postIds);
     getPostsLikes(postIds);
   }, [postList]);
@@ -132,7 +138,8 @@ function ListPosts({ postList, isUser, handleDelete }) {
                   <p>{checkTimePassed(post?.createdAt)}</p>
                 </div>
               </div>
-              {isUser && (
+
+              {isUser && !showEditModal && (
                 <DropdownComp
                   trigger={
                     <EllipsisVertical className="text-xl text-gray-500" />
@@ -140,6 +147,7 @@ function ListPosts({ postList, isUser, handleDelete }) {
                   items={[
                     {
                       label: "Edit",
+                      onClick: () => setShowEditModal(post._id),
                       className: "bg-gray-500 rounded-3xl text-center w-full",
                     },
                     {
@@ -153,38 +161,43 @@ function ListPosts({ postList, isUser, handleDelete }) {
                   menuClassName={`w-[100px]`}
                 />
               )}
+
+              {isUser && showEditModal === post._id && (
+                <X size={20} onClick={() => setShowEditModal(null)} />
+              )}
             </div>
 
-            <div className="postContent flex flex-col gap-2">
-              <div className="w-full textContent">
-                <p className="text-lg">{post?.content}</p>
-              </div>
-              {post?.images && post?.images.length > 0 && (
-                <div className="imgBox w-full flex flex-row items-center justify-center gap-2">
-                  {/* {activeIndex > 0 && post?.images[activeIndex - 1] && ( */}
-                    <Button
-                      className={" text-white w-[50px] "}
-                      disabled = {activeIndex === 0}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (activeIndex > 0) {
-                          setActiveIndex(post._id, activeIndex - 1);
-                        }
-                      }}
-                    >
-                      <ArrowLeft size={20} />
-                    </Button>
-                  {/* )} */}
-                  <div className="imageContent w-full h-96  overflow-hidden rounded-lg">
-                    <img
-                      src={post?.images[activeIndex]}
-                      alt="post-img"
-                      className="w-full h-full object-cover rounded-lg"
-                    />
+            {showEditModal === post._id ? (
+              <PostForm post={post} displayForm={setShowEditModal}/>
+            ) : (
+              <div>
+                <div className="postContent flex flex-col gap-2">
+                  <div className="w-full textContent">
+                    <p className="text-lg">{post?.content}</p>
                   </div>
+                  {post?.images && post?.images.length > 0 && (
+                    <div className="imgBox w-full flex flex-row items-center justify-center gap-2">
+                      <Button
+                        className={" text-white w-[50px] "}
+                        disabled={activeIndex === 0}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (activeIndex > 0) {
+                            setActiveIndex(post._id, activeIndex - 1);
+                          }
+                        }}
+                      >
+                        <ArrowLeft size={20} />
+                      </Button>
+                      {/* )} */}
+                      <div className="imageContent w-full h-128 overflow-hidden rounded-lg">
+                        <img
+                          src={post?.images[activeIndex]}
+                          alt="post-img"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
 
-                  {/* {activeIndex < post?.images.length - 1 &&
-                    post?.images[activeIndex + 1] && ( */}
                       <Button
                         className={" text-white w-[50px] "}
                         disabled={activeIndex === post?.images.length - 1}
@@ -197,23 +210,24 @@ function ListPosts({ postList, isUser, handleDelete }) {
                       >
                         <ArrowRight size={20} />
                       </Button>
-                    {/* )} */}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <Button
-              className={"w-[100px] bg-transparent border"}
-              onClick={(e) => toggleTweetLike(post._id)}
-            >
-              {!likedPosts.includes(post._id) ? (
-                <ThumbsUp size={20} />
-              ) : (
-                <ThumbUpIcon size={20} />
-              )}
+                <Button
+                  className={"w-[100px] bg-transparent border"}
+                  onClick={(e) => toggleTweetLike(post._id)}
+                >
+                  {!likedPosts.includes(post._id) ? (
+                    <ThumbsUp size={20} />
+                  ) : (
+                    <ThumbUpIcon size={20} />
+                  )}
 
-              <span className="ml-2">{postsLikes[post._id]}</span>
-            </Button>
+                  <span className="ml-2">{postsLikes[post._id]}</span>
+                </Button>
+              </div>
+            )}
           </div>
         );
       })}

@@ -12,7 +12,7 @@ import CommentForm from './CommentForm.jsx';
 import GetImageOrVideoPreview from './GetImagePreview.jsx';
 import UploadVideoAndThumbnail from './UploadVideoAndThumbnail.jsx';
 import ListPosts from './ListPosts.jsx';
-import AddPost from './AddPost.jsx';
+import PostForm from './PostForm.jsx';
 import Profile from './Profile.jsx';
 import WatchHistory from './WatchHistory.jsx';
 import PlaylistsSection from './PlaylistsSection.jsx';
@@ -42,7 +42,7 @@ export {
   GetImageOrVideoPreview,
   UploadVideoAndThumbnail,
   ListPosts,
-  AddPost,
+  PostForm,
   Profile,
   Section,
   WatchHistory,

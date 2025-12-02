@@ -1,11 +1,11 @@
 import React from "react";
-import { AddPost, ListPosts } from "./index.js";
+import { PostForm, ListPosts } from "./index.js";
 import { useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { deviceWidth } from "../utils/index.js";
 
 function Posts() {
-  const { channelPosts, profileData, deletePost } = useOutletContext();
+  const { channelPosts, profileData } = useOutletContext();
   const userData = useSelector((state) => state.auth.userData);
   const isUser = profileData?._id === userData?._id;
   const isMobile = deviceWidth();
@@ -16,7 +16,7 @@ function Posts() {
         isMobile ? "w-full " : "w-3/5"
       } h-full flex flex-col gap-4 p-4 `}
     >
-      {isUser && <AddPost userData={profileData} userPosts={channelPosts} />}
+      {isUser && <PostForm userData={profileData} userPosts={channelPosts} />}
       {channelPosts.length === 0 ? (
         <p
           className={` ${
@@ -31,7 +31,6 @@ function Posts() {
         <ListPosts
           postList={channelPosts}
           isUser={isUser}
-          handleDelete={deletePost}
         />
       )}
     </div>

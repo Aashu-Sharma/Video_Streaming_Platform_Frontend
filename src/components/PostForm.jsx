@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FormInput } from "./index.js";
 import { Button } from "./ui/button.jsx";
-import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, X, Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { createPost } from "../store/postSlice.js";
+import { createPost, updatePost } from "../store/postSlice.js";
 
-
-function AddPost({ userData, userPosts, post }) {
+function PostForm({ userData, post, displayForm }) {
   const {
     register,
     handleSubmit,
     watch,
     control,
-    formState: { errors },
-    clearErrors,
+    formState: { errors, isDirty, dirtyFields },
+    reset,
     setValue,
   } = useForm({
     defaultValues: {
-      content: "",
-      images: [],
+      content: post ? post.content : "",
+      images: post && post.images.length !== 0 ? [...post.images] : [],
     },
   });
 
@@ -31,18 +30,15 @@ function AddPost({ userData, userPosts, post }) {
       maxLength: 3,
     },
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const initialPostRef = useRef(null);
   const dispatch = useDispatch();
   const [imagePreview, setImagePreview] = useState({});
-  const [disabled, setDisabled] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
   const prevField = fields[activeIndex - 1];
   const nextField = fields[activeIndex + 1];
-
-  const watchContent = watch("content");
-
-  useEffect(() => {
-    setDisabled(!watchContent?.trim());
-  }, [watchContent]);
+  const formValues = watch();
 
   const handleOnChange = (event, id) => {
     if (event.target.files) {
@@ -60,29 +56,97 @@ function AddPost({ userData, userPosts, post }) {
   };
 
   const submit = async (data) => {
+    setIsSubmitting(true);
     if (post) {
+      console.log("data: ", data);
+      const tweetId = post._id;
+      const updatedData = new FormData();
+
+      if (data.content !== initialPostRef.current.content) {
+        updatedData.append("content", data.content);
+      }
+
+      if (data.images && data.images.length > 0) {
+        console.log("inside if");
+        for (let i = 0; i < data.images.length; i++) {
+          if (typeof data.images[i] !== "string") {
+            console.log("if inside and if");
+            console.log("images", data.images[i][0]);
+            updatedData.append("images", data.images[i][0]);
+          }
+        }
+      }
+
+      for (const [key, value] of updatedData) {
+        console.log("Key: ", key, "value: ", value);
+      }
+
+      try {
+        await dispatch(updatePost({ tweetId, updatedData })).unwrap();
+        toast.success("Post updated successfully!");
+        setValue("content", "");
+        setValue("images", []);
+        setImagePreview({});
+        setActiveIndex(null);
+        displayForm(null);
+      } catch (error) {
+        toast.error(error.message);
+        console.error(error.message);
+        console.log("Error message: ", error.message);
+      }
     } else {
-    }
-    const postData = new FormData();
-    postData.append("content", data.content);
-    if (data.images && data.images.length > 0) {
-      for (let i = 0; i < data.images.length; i++) {
-        const fileList = data.images[i];
-        if (fileList && fileList[0]) postData.append("images", fileList[0]);
+      const postData = new FormData();
+      postData.append("content", data.content);
+      if (data.images && data.images.length > 0) {
+        for (let i = 0; i < data.images.length; i++) {
+          const fileList = data.images[i];
+          if (fileList && fileList[0]) postData.append("images", fileList[0]);
+        }
+      }
+      try {
+        await dispatch(createPost(postData)).unwrap();
+        toast.success("Post created successfully!");
+        setValue("content", "");
+        setValue("images", []);
+        setImagePreview({});
+        setActiveIndex(null);
+      } catch (error) {
+        console.error(error.response.data);
+        console.log("Error message: ", error.response.data.message);
       }
     }
-    try {
-      await dispatch(createPost(postData)).unwrap();
-      toast.success("Post created successfully!");
-      setValue("content", "");
-      setValue("images", []);
-      setImagePreview({});
-      setActiveIndex(null);
-    } catch (error) {
-      console.error(error.response.data);
-      console.log("Error message: ", error.response.data.message);
-    }
+    setIsSubmitting(false);
   };
+
+  useEffect(() => {
+    if (post) {
+      initialPostRef.current = {
+        content: post.content,
+        images: [...post.images],
+      };
+    }
+  }, [post]);
+
+  useEffect(() => {
+    if (post) {
+      reset({ content: post.content || "", images: [] });
+      if (post.images.length > 0) {
+        post.images.forEach(() => append({}));
+        setActiveIndex(0);
+      }
+    }
+  }, [post, reset]);
+
+  useEffect(() => {
+    const inital = initialPostRef.current;
+    if (fields.length !== 0 && inital?.images.length > 0) {
+      const map = {};
+      fields.forEach((field, index) => {
+        map[field.id] = inital.images[index];
+      });
+      setImagePreview(map);
+    }
+  }, [fields]);
 
   useEffect(() => {
     if (fields.length === 0) {
@@ -91,16 +155,45 @@ function AddPost({ userData, userPosts, post }) {
     }
   }, [fields]);
 
+  const isFormChanged = useMemo(() => {
+    if (!post) return formValues.content !== "";
+    const initial = initialPostRef?.current;
+
+    if (!initial) return false;
+
+    if (formValues.content.trim() !== initial.content.trim()) return true;
+
+    const initialCount = initial.images.length;
+    const currentCount = Object.keys(imagePreview).length;
+
+    if (initialCount !== currentCount) return true;
+
+    const initialList = initial.images;
+    const currentList = Object.values(imagePreview);
+
+    for (let i = 0; i < initialList.length; i++) {
+      if (initialList[i] !== currentList[i]) return true;
+    }
+    return false;
+  }, [post, formValues, imagePreview]);
+
+  const disabled = !isFormChanged;
+
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">
-      <div className="userDetails flex flex-row gap-2 items-center">
-        <div className="Profile-image-circle w-10 h-10 rounded-full border overflow-hidden ">
-          <img src={userData?.avatar} className="w-full h-full object-cover" />
+      {!post && (
+        <div className="userDetails flex flex-row gap-2 items-center">
+          <div className="Profile-image-circle w-10 h-10 rounded-full border overflow-hidden ">
+            <img
+              src={userData?.avatar}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="text-lg ">
+            <p>{userData?.username}</p>
+          </div>
         </div>
-        <div className="text-lg ">
-          <p>{userData?.username}</p>
-        </div>
-      </div>
+      )}
 
       <form
         onSubmit={handleSubmit(submit)}
@@ -135,8 +228,9 @@ function AddPost({ userData, userPosts, post }) {
                   <ArrowLeft size={20} />
                 </Button>
               )}
+
               {fields[activeIndex] && imagePreview[fields[activeIndex]?.id] ? (
-                <div className="w-full h-[300px] border rounded-lg overflow-hidden relative cursor-pointer">
+                <div className="w-full h-128 border rounded-lg overflow-hidden relative cursor-pointer">
                   <img
                     src={imagePreview[fields[activeIndex]?.id]}
                     className="w-full h-full object-cover"
@@ -224,12 +318,23 @@ function AddPost({ userData, userPosts, post }) {
             </Button>
           )}
         </div>
-        <Button type="submit" className={"bg-blue-500 text-white w-[100px]  "}>
-          Submit
+        <Button
+          disabled={disabled || isSubmitting}
+          type="submit"
+          className={"bg-blue-500 text-white w-[100px]  "}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </div>
   );
 }
 
-export default AddPost;
+export default PostForm;
