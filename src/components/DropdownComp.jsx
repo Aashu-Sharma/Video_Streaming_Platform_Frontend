@@ -31,7 +31,7 @@ function DropdownComp({ trigger, items, className, children, menuClassName }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className={`bg-white w-[200px] text-black shadow-lg rounded-xl p-2 ${menuClassName}`}
+          className={`bg-white w-[300px] text-black shadow-lg rounded-xl p-2 ${menuClassName}`}
         >
           {children && (
             <>

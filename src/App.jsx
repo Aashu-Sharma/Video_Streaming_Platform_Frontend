@@ -8,7 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentUser, fetchUserLikedVideos } from "./store/authSlice.js";
 import { fetchUserPlaylists } from "./store/playlistSlice.js";
 import { fetchUserWatchHistory } from "./store/watchHistorySlice.js";
-import { fetchAllVideos } from "./store/videoSlice";
+import { fetchAllVideos } from "./store/videoSlice.js";
+import {fetchProfileData} from './store/profileSlice.js';
 
 function App() {
   const dispatch = useDispatch();
@@ -25,9 +26,9 @@ function App() {
       dispatch(fetchUserPlaylists());
       dispatch(fetchUserLikedVideos());
       dispatch(fetchUserWatchHistory());
-      // dispatch(
-      //   fetchProfileData({ profileType: "user", username: userData.username })
-      // );
+      dispatch(
+        fetchProfileData({ profileType: "user", username: userData.username })
+      );
       // dispatch(fetchProfileVideos({ profileType: "user" }));
       // dispatch(fetchProfilePosts({ profileType: "user" }));
     }

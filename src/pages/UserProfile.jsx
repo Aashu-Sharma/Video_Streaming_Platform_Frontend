@@ -32,10 +32,6 @@ function UserProfile() {
         })
       );
     }
-    return () => {
-      dispatch(clearAllPreviousData());
-      dispatch(clearPosts());
-    };
   }, [dispatch, loggedInUser?._id]);
 
   useEffect(() => {
