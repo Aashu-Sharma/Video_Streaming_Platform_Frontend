@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Plus, X, Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { createPost, updatePost } from "../store/postSlice.js";
+import axios from "axios";
 
 function PostForm({ userData, post, displayForm }) {
   const {
@@ -13,7 +14,7 @@ function PostForm({ userData, post, displayForm }) {
     handleSubmit,
     watch,
     control,
-    formState: { errors, isDirty, dirtyFields },
+    formState: { errors },
     reset,
     setValue,
   } = useForm({
@@ -50,7 +51,23 @@ function PostForm({ userData, post, displayForm }) {
     }
   };
 
-  const handleRemove = async (index) => {
+  const handleRemove = async (index, imageUrl) => {
+    if (post) {
+      const tweetId = post._id;
+      console.log("tweetId: ", tweetId);
+      console.log("imageUrl: ", imageUrl);
+      const images = initialPostRef.current.images;
+      let updatedImages = images.filter((image) => image !== imageUrl);
+
+      initialPostRef.current.images = updatedImages;
+      try {
+        const res = await axios.delete(`/api/v1/tweets/${tweetId}/${index}`);
+        console.log(res.data.message);
+      } catch (error) {
+        console.log(error);
+        console.log(error.response.data.message);
+      }
+    }
     setActiveIndex((prev) => (prev === 0 ? 0 : prev - 1));
     remove(index);
   };
@@ -58,7 +75,6 @@ function PostForm({ userData, post, displayForm }) {
   const submit = async (data) => {
     setIsSubmitting(true);
     if (post) {
-      console.log("data: ", data);
       const tweetId = post._id;
       const updatedData = new FormData();
 
@@ -70,15 +86,9 @@ function PostForm({ userData, post, displayForm }) {
         console.log("inside if");
         for (let i = 0; i < data.images.length; i++) {
           if (typeof data.images[i] !== "string") {
-            console.log("if inside and if");
-            console.log("images", data.images[i][0]);
             updatedData.append("images", data.images[i][0]);
           }
         }
-      }
-
-      for (const [key, value] of updatedData) {
-        console.log("Key: ", key, "value: ", value);
       }
 
       try {
@@ -166,6 +176,9 @@ function PostForm({ userData, post, displayForm }) {
     const initialCount = initial.images.length;
     const currentCount = Object.keys(imagePreview).length;
 
+    console.log("InitialCount: ", initialCount);
+    console.log("currentCount: ", currentCount);
+
     if (initialCount !== currentCount) return true;
 
     const initialList = initial.images;
@@ -174,10 +187,22 @@ function PostForm({ userData, post, displayForm }) {
     for (let i = 0; i < initialList.length; i++) {
       if (initialList[i] !== currentList[i]) return true;
     }
-    return false;
-  }, [post, formValues, imagePreview]);
 
+    const originalImages = post.images;
+    if (originalImages.length !== initialCount) return true;
+
+    for (let i = 0; i < originalImages.length; i++) {
+      if (originalImages[i] !== initialList[i]) return true;
+    }
+
+    return false;
+  }, [post, formValues, imagePreview, initialPostRef]);
+
+  console.log("isFormChanged: ", isFormChanged);
   const disabled = !isFormChanged;
+
+  console.log("imagesPreview: ", imagePreview);
+  console.log("fields: ", fields);
 
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">
@@ -239,7 +264,12 @@ function PostForm({ userData, post, displayForm }) {
                     className="absolute top-[10px] right-[10px] bg-red-500"
                     color="white"
                     size={20}
-                    onClick={() => handleRemove(activeIndex)}
+                    onClick={() =>
+                      handleRemove(
+                        activeIndex,
+                        imagePreview[fields[activeIndex]?.id]
+                      )
+                    }
                   />
                 </div>
               ) : (
