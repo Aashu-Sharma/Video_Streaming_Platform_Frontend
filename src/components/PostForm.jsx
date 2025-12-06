@@ -52,17 +52,13 @@ function PostForm({ userData, post, displayForm }) {
   };
 
   const handleRemove = async (index, imageUrl) => {
-    if (post) {
+    if (post && post?.images.includes(imageUrl)) {
       const tweetId = post._id;
-      console.log("tweetId: ", tweetId);
-      console.log("imageUrl: ", imageUrl);
       const images = initialPostRef.current.images;
-      let updatedImages = images.filter((image) => image !== imageUrl);
-
-      initialPostRef.current.images = updatedImages;
       try {
-        const res = await axios.delete(`/api/v1/tweets/${tweetId}/${index}`);
-        console.log(res.data.message);
+        await axios.delete(`/api/v1/tweets/${tweetId}/${index}`);
+        let updatedImages = images.filter((image) => image !== imageUrl);
+        initialPostRef.current.images = updatedImages;
       } catch (error) {
         console.log(error);
         console.log(error.response.data.message);
@@ -149,7 +145,11 @@ function PostForm({ userData, post, displayForm }) {
 
   useEffect(() => {
     const inital = initialPostRef.current;
-    if (fields.length !== 0 && inital?.images.length > 0) {
+    if (
+      fields.length !== 0 &&
+      inital?.images.length > 0 &&
+      fields.length === inital.images.length
+    ) {
       const map = {};
       fields.forEach((field, index) => {
         map[field.id] = inital.images[index];
@@ -176,9 +176,6 @@ function PostForm({ userData, post, displayForm }) {
     const initialCount = initial.images.length;
     const currentCount = Object.keys(imagePreview).length;
 
-    console.log("InitialCount: ", initialCount);
-    console.log("currentCount: ", currentCount);
-
     if (initialCount !== currentCount) return true;
 
     const initialList = initial.images;
@@ -198,11 +195,9 @@ function PostForm({ userData, post, displayForm }) {
     return false;
   }, [post, formValues, imagePreview, initialPostRef]);
 
-  console.log("isFormChanged: ", isFormChanged);
   const disabled = !isFormChanged;
 
-  console.log("imagesPreview: ", imagePreview);
-  console.log("fields: ", fields);
+  console.log("imagePreview: ", imagePreview);
 
   return (
     <div className="w-full flex flex-col gap-2 border rounded-lg p-4 ">
