@@ -13,7 +13,6 @@ function UpdateVideo() {
     dispatch(fetchVideoById(videoId));
   }, [videoId])
 
-  console.log("Videotobeupdate: ", videoTobeUpdated)
   return (
     <div className="bg-black w-full min-h-screen">
       <VideoForm video={videoTobeUpdated}/>

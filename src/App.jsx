@@ -29,8 +29,6 @@ function App() {
       dispatch(
         fetchProfileData({ profileType: "user", username: userData.username })
       );
-      // dispatch(fetchProfileVideos({ profileType: "user" }));
-      // dispatch(fetchProfilePosts({ profileType: "user" }));
     }
   }, [userId]);
 

@@ -12,6 +12,7 @@ import AllLikedVideos from './AllLikedVideos.jsx';
 import Settings from './Settings.jsx';
 import CreateVideo from './CreateVideo.jsx';
 import UpdateVideo from './UpdateVideo.jsx';
+import SearchPage from './SearchPage.jsx';
 
 export {
     VideoPage,
@@ -27,5 +28,6 @@ export {
     AllLikedVideos,
     Settings,
     CreateVideo,
-    UpdateVideo
+    UpdateVideo, 
+    SearchPage
 }

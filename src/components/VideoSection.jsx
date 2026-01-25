@@ -31,9 +31,6 @@ function VideoSection({
   const navigate = useNavigate();
   const playlists = useSelector((state) => state.playlists.userPlaylists);
 
-
-  console.log("likedVideos: ", likedVideos);
-
   const likedVideodIds = likedVideos?.map((video) => video._id);
 
   const showPublishedTime = () => {

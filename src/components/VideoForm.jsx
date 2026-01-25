@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import deviceWidth from "../utils/deviceWidth.js";
 import { useForm } from "react-hook-form";
-import { UploadVideoAndThumbnail, FormInput } from "./index.js";
+import { UploadVideoAndThumbnail, FormInput, TagsComp } from "./index.js";
 import { Button } from "./ui/button.jsx";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { createVideo, fetchAllVideos, updateVideo } from "@/store/videoSlice.js";
+import {
+  createVideo,
+  fetchAllVideos,
+  updateVideo,
+} from "@/store/videoSlice.js";
 
-function VideoForm({ video }) {
+function VideoForm({ video }) { 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMobile = deviceWidth();
   const {
@@ -27,6 +31,7 @@ function VideoForm({ video }) {
       isPublished: video ? video.isPublished : true,
       videoFile: video ? video.videoFile : "",
       thumbnail: video ? video.thumbnail : "",
+      tags: video ? new Set([...video.tags]) : new Set(),
     },
   });
 
@@ -55,7 +60,11 @@ function VideoForm({ video }) {
         updatedData.append("isPublished", JSON.parse(data.isPublished));
       }
 
-      const isEmpty =  [...updatedData.keys()].length === 0;
+      if (data.tags !== video.tags){
+        updatedData.append("tags",  data.tags ? data.tags.join(", ") : "");
+      }
+
+      const isEmpty = [...updatedData.keys()].length === 0;
 
       if (isEmpty) {
         toast.error("No updates to make");
@@ -76,7 +85,8 @@ function VideoForm({ video }) {
       videoData.append("isPublished", JSON.parse(data.isPublished));
       videoData.append("videoFile", data.videoFile);
       videoData.append("thumbnail", data.thumbnail);
-
+      videoData.append("tags", data.tags ? data.tags.join(", ") : "");
+ 
       try {
         await dispatch(createVideo(videoData)).unwrap();
         toast.success("Successfully published the video");
@@ -97,10 +107,11 @@ function VideoForm({ video }) {
         description: video.description || "",
         isPublished: video.isPublished,
         videoFile: video.videoFile || "",
+        tags: video.tags || []
       });
     }
   }, [video, reset]);
-
+  
   return (
     <div className={`bg-black w-full min-h-screen text-white`}>
       <div className={`w-full text-center border-b p-4`}>
@@ -159,6 +170,8 @@ function VideoForm({ video }) {
               <option value={"true"}>Public</option>
               <option value={"false"}>Private</option>
             </select>
+
+            <TagsComp control={control} name="tags" maxTags={6} videoTags = {video?.tags}/>
           </div>
           <UploadVideoAndThumbnail
             control={control}
@@ -193,3 +206,5 @@ function VideoForm({ video }) {
 }
 
 export default VideoForm;
+
+

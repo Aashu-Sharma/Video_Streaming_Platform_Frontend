@@ -5,7 +5,6 @@ export const fetchUserPlaylists = createAsyncThunk(
   "playlists/fetchUserPlaylists",
   async (rejectWithValue) => {
     try {
-      console.log("Fetching User Playlists....");
       const response = await axios.get("/api/v1/dashboard/playlists");
       return response.data.data;
     } catch (error) {

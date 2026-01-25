@@ -5,7 +5,6 @@ export const fetchUserWatchHistory = createAsyncThunk(
   "watchHistory/fetchUserWatchHistory",
   async (_, {rejectWithValue}) => {
     try {
-      console.log("Fetching user watch history...");
       const response = await axios.get(`/api/v1/users/watchHistory`);
       return response.data.data;
     } catch (error) {

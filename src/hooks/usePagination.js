@@ -28,7 +28,6 @@ export default function usePagination(
 
     if (nextIndex < displayHistory?.length) {
       setStartIndex(nextIndex);
-      console.log("StartIndex: ", startIndex);
       setActiveHistory(
         displayHistory?.slice(nextIndex, nextIndex + itemsPerPage)
       );
