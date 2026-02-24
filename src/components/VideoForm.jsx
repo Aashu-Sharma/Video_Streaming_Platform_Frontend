@@ -31,7 +31,7 @@ function VideoForm({ video }) {
       isPublished: video ? video.isPublished : true,
       videoFile: video ? video.videoFile : "",
       thumbnail: video ? video.thumbnail : "",
-      tags: video ? new Set([...video.tags]) : new Set(),
+      tags: video && video.tags ? new Set([...video.tags]) : new Set(),
     },
   });
 
