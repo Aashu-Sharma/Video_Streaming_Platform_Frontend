@@ -26,7 +26,7 @@ import UpdateCoverImageAndAvatar from './UpdateCoverImageAndAvatar.jsx';
 import UpdateUsernameAndEmail from './UpdateUsernameAndEmail.jsx';
 import UpdatePassword from './UpdatePassword.jsx';
 import VideoForm from './VideoForm.jsx';
-import SearchBar from './SearchBar.jsx';
+import {SearchBar} from "./Search_Feature/index.js";
 import TagsComp from './TagsComp.jsx';
 
 export {
