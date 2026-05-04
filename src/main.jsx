@@ -20,6 +20,7 @@ import {
   Settings,
   CreateVideo,
   UpdateVideo,
+  SearchPage
 } from "./pages/index.js";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
         path: "/settings",
         element: <Settings />,
       },
+      {
+        path: `/searchResults`,
+        element: <SearchPage/>
+      }
     ],
   },
 

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { PlaylistForm } from "./index.js";
-import {useClickOutside} from '../hooks/index.js';
+import { useClickOutside } from "../hooks/index.js";
 import { fetchUserPlaylists } from "../store/playlistSlice.js";
 
 function AddToPlaylist() {
@@ -32,14 +32,14 @@ function AddToPlaylist() {
     try {
       if (!e.target.checked) {
         const response = await axios.patch(
-          `/api/v1/playlist/remove/${videoId}/${playlistId}`
+          `/api/v1/playlist/remove/${videoId}/${playlistId}`,
         );
         console.log("Response: ", response.data);
         console.log("Success Message: ", response.data.message);
         toast.success(response.data.message);
       } else {
         const response = await axios.patch(
-          `/api/v1/playlist/add/${videoId}/${playlistId}`
+          `/api/v1/playlist/add/${videoId}/${playlistId}`,
         );
         console.log("Response: ", response.data);
         console.log("Success Message: ", response.data.message);
@@ -62,8 +62,8 @@ function AddToPlaylist() {
   useClickOutside(wrapperRef, () => {
     setDisplayForm((prev) => !prev);
     navigate(-1);
-  })
-  
+  });
+
   useEffect(() => {
     CheckIfVideoExistsinPlaylists();
   }, [videoId, userPlaylists]);
